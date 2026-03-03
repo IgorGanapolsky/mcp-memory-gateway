@@ -1,7 +1,7 @@
 {
   "name": "rlhf-feedback-loop",
-  "version": "0.1.0",
-  "description": "Open-source RLHF feedback loop: thumbs up/down capture, schema validation, mistake prevention rules, and DPO export.",
+  "version": "0.2.0",
+  "description": "Production-grade RLHF feedback operations for coding agents: capture thumbs signals, enforce schema quality, prevent repeated mistakes, and export DPO pairs.",
   "main": "scripts/feedback-loop.js",
   "type": "commonjs",
   "scripts": {
@@ -17,11 +17,16 @@
   },
   "keywords": [
     "rlhf",
-    "feedback",
+    "dpo",
+    "ai-agents",
+    "llmops",
+    "preference-learning",
+    "feedback-loop",
     "claude",
-    "gemini",
     "codex",
-    "dpo"
+    "gemini",
+    "agent-evaluation",
+    "prompt-engineering"
   ],
   "license": "MIT"
 }
