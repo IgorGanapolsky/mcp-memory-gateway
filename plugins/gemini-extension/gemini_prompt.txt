@@ -1,0 +1,10 @@
+You have access to an RLHF feedback tool.
+
+When user gives explicit success/failure feedback:
+- call `capture_feedback` with signal=up/down and rich context
+- include tags for domain and action type
+- reject bare thumbs down/up with no context
+
+Before major work:
+- call `feedback_summary`
+- apply `prevention_rules` as constraints

@@ -1,0 +1,28 @@
+{
+  "tools": [
+    {
+      "name": "capture_feedback",
+      "description": "Capture thumbs feedback and store actionable memory",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "signal": { "type": "string", "enum": ["up", "down"] },
+          "context": { "type": "string" },
+          "what_went_wrong": { "type": "string" },
+          "what_to_change": { "type": "string" },
+          "what_worked": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } }
+        },
+        "required": ["signal", "context"]
+      }
+    },
+    {
+      "name": "feedback_summary",
+      "description": "Return compact summary of recent feedback and trends"
+    },
+    {
+      "name": "prevention_rules",
+      "description": "Generate current prevention rules from repeated mistakes"
+    }
+  ]
+}

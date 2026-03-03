@@ -1,0 +1,27 @@
+{
+  "name": "rlhf-feedback-loop",
+  "version": "0.1.0",
+  "description": "Open-source RLHF feedback loop: thumbs up/down capture, schema validation, mistake prevention rules, and DPO export.",
+  "main": "scripts/feedback-loop.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "npm run test:schema && npm run test:loop && npm run test:dpo",
+    "test:schema": "node scripts/feedback-schema.js --test",
+    "test:loop": "node scripts/feedback-loop.js --test",
+    "test:dpo": "node scripts/export-dpo-pairs.js --test",
+    "feedback:capture": "node .claude/scripts/feedback/capture-feedback.js",
+    "feedback:stats": "node .claude/scripts/feedback/capture-feedback.js --stats",
+    "feedback:summary": "node .claude/scripts/feedback/capture-feedback.js --summary",
+    "feedback:rules": "node .claude/scripts/feedback/capture-feedback.js --rules",
+    "feedback:export:dpo": "node scripts/export-dpo-pairs.js --from-local --output .claude/memory/feedback/dpo-pairs.jsonl"
+  },
+  "keywords": [
+    "rlhf",
+    "feedback",
+    "claude",
+    "gemini",
+    "codex",
+    "dpo"
+  ],
+  "license": "MIT"
+}
