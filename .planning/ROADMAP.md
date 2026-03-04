@@ -122,7 +122,13 @@ Plans:
   2. A pre-tool guard call with a known-bad action returns a `block` or `warn` decision derived from attributed feedback history, not from hard-coded rules
   3. Calling the guard with a never-seen action returns `allow` — no false positives from missing attribution data
   4. Unit tests cover attribution capture, guard allow/block/warn paths, and edge cases (no prior feedback, malformed action); all pass with 0 failures
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Port feedback-attribution.js + wire recordAction/attributeFeedback into captureFeedback() (ATTR-01)
+- [ ] 06-02-PLAN.md — Port hybrid-feedback-context.js pre-tool guard engine (ATTR-02)
+- [ ] 06-03-PLAN.md — TDD: node:test suites for both attribution modules (ATTR-03)
+- [ ] 06-04-PLAN.md — Proof gate + npm scripts + requirements closure (ATTR-03)
 
 ### Phase 7: Data Quality
 **Goal**: Every feedback entry that enters the system is audited for schema correctness, semantic quality, and anomaly risk; captured entries carry rich contextual metadata and granular outcome classifications
@@ -213,7 +219,7 @@ Phase 6 → Phases 7, 8 (parallel, both depend on 6) → Phase 9 (depends on 6) 
 | 3. Governance into Subway | 4/4 | Complete | 2026-03-04 |
 | 4. LanceDB Vector Storage | 4/4 | Complete | 2026-03-04 |
 | 5. RLAIF and DPO Optimization | 3/3 | Complete | 2026-03-04 |
-| 6. Feedback Attribution | 0/TBD | Not started | - |
+| 6. Feedback Attribution | 0/4 | Not started | - |
 | 7. Data Quality | 0/TBD | Not started | - |
 | 8. Loop Closure | 0/TBD | Not started | - |
 | 9. Intelligence | 0/TBD | Not started | - |
