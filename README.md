@@ -73,6 +73,17 @@ This project gives you a working loop:
 7. Reuse the same core through API + MCP wrappers.
 8. Route intents through policy bundles with human checkpoints on high-risk actions.
 
+## Pricing
+
+| Plan | Price | What you get |
+|------|-------|-------------|
+| **Open Source** | $0 forever | Full source, self-hosted, MIT license, 314+ tests, 5-platform plugins |
+| **Cloud Pro** | $49/mo | Hosted HTTPS API on Railway, provisioned API key on payment, usage metering, email support |
+
+Get Cloud Pro: see the [landing page](docs/landing-page.html) or go straight to Stripe Checkout.
+
+---
+
 ## Quick Start
 
 ```bash
