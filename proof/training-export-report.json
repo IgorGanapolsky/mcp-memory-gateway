@@ -1,0 +1,57 @@
+{
+  "phase": 10,
+  "name": "Training Export",
+  "requirements": [
+    "XPRT-01",
+    "XPRT-02",
+    "XPRT-03",
+    "XPRT-04",
+    "XPRT-05"
+  ],
+  "generatedAt": "2026-03-04T22:01:39.739Z",
+  "testResults": {
+    "passed": 32,
+    "failed": 0,
+    "suiteFile": "tests/training-export.test.js"
+  },
+  "smokeTests": {
+    "pytorchExport": {
+      "passed": true,
+      "pairCount": 1,
+      "format": "pytorch-dpo"
+    },
+    "csvExport": {
+      "passed": true,
+      "rowCount": 2,
+      "headers": [
+        "id",
+        "timestamp",
+        "signal",
+        "reward",
+        "context",
+        "domain",
+        "tags",
+        "outcomeCategory"
+      ]
+    },
+    "actionAnalysis": {
+      "passed": true,
+      "fields": [
+        "generatedAt",
+        "summary",
+        "actionPatterns",
+        "topFailureModes",
+        "recommendations"
+      ]
+    },
+    "validateMemoryStructure": {
+      "passed": true,
+      "validEntryAccepted": true,
+      "missingChosenRejected": true,
+      "missingChosenIssues": [
+        "DPO export: chosen field required"
+      ]
+    }
+  },
+  "overallPassed": true
+}
