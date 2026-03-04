@@ -12,6 +12,7 @@ const path = require('path');
 const {
   resolveFeedbackAction,
   prepareForStorage,
+  parseTimestamp,
 } = require('./feedback-schema');
 const {
   buildRubricEvaluation,
@@ -19,6 +20,13 @@ const {
 
 const PROJECT_ROOT = path.join(__dirname, '..');
 const DEFAULT_FEEDBACK_DIR = path.join(PROJECT_ROOT, '.claude', 'memory', 'feedback');
+
+// ML sequence tracking constants (ML-03)
+const SEQUENCE_WINDOW = 10;
+const DOMAIN_CATEGORIES = [
+  'testing', 'security', 'performance', 'ui-components', 'api-integration',
+  'git-workflow', 'documentation', 'debugging', 'architecture', 'data-modeling',
+];
 
 function getFeedbackPaths() {
   const feedbackDir = process.env.RLHF_FEEDBACK_DIR || DEFAULT_FEEDBACK_DIR;
@@ -35,6 +43,22 @@ function getContextFsModule() {
   try {
     return require('./contextfs');
   } catch {
+    return null;
+  }
+}
+
+function getVectorStoreModule() {
+  try {
+    return require('./vector-store');
+  } catch {
+    return null;
+  }
+}
+
+function getSelfAuditModule() {
+  try {
+    return require('./rlaif-self-audit');
+  } catch (_) {
     return null;
   }
 }
@@ -109,6 +133,125 @@ function saveSummary(summary) {
   const { SUMMARY_PATH } = getFeedbackPaths();
   ensureDir(path.dirname(SUMMARY_PATH));
   fs.writeFileSync(SUMMARY_PATH, `${JSON.stringify(summary, null, 2)}\n`);
+}
+
+// ============================================================
+// ML Side-Effect Helpers — Sequence Tracking (ML-03) and
+// Diversity Tracking (ML-04). Inline per Subway architecture.
+// ============================================================
+
+function inferDomain(tags, context) {
+  const tagSet = new Set((tags || []).map((t) => t.toLowerCase()));
+  const ctx = (context || '').toLowerCase();
+  if (tagSet.has('test') || tagSet.has('testing') || ctx.includes('test')) return 'testing';
+  if (tagSet.has('security') || ctx.includes('secret')) return 'security';
+  if (tagSet.has('perf') || tagSet.has('performance') || ctx.includes('performance')) return 'performance';
+  if (tagSet.has('ui') || tagSet.has('component') || ctx.includes('component')) return 'ui-components';
+  if (tagSet.has('api') || tagSet.has('endpoint') || ctx.includes('endpoint')) return 'api-integration';
+  if (tagSet.has('git') || tagSet.has('commit') || ctx.includes('commit')) return 'git-workflow';
+  if (tagSet.has('doc') || tagSet.has('readme') || ctx.includes('readme')) return 'documentation';
+  if (tagSet.has('debug') || tagSet.has('debugging') || ctx.includes('error')) return 'debugging';
+  if (tagSet.has('arch') || tagSet.has('architecture') || ctx.includes('design')) return 'architecture';
+  if (tagSet.has('data') || tagSet.has('schema') || ctx.includes('schema')) return 'data-modeling';
+  return 'general';
+}
+
+function calculateTrend(rewards) {
+  if (rewards.length < 2) return 0;
+  const recent = rewards.slice(-3);
+  return recent.reduce((a, b) => a + b, 0) / recent.length;
+}
+
+function calculateTimeGaps(sequence) {
+  const gaps = [];
+  for (let i = 1; i < sequence.length; i++) {
+    const prev = parseTimestamp(sequence[i - 1].timestamp);
+    const curr = parseTimestamp(sequence[i].timestamp);
+    if (prev && curr) {
+      gaps.push((curr - prev) / 1000 / 60); // minutes
+    }
+  }
+  return gaps;
+}
+
+function extractActionPatterns(sequence) {
+  const patterns = {};
+  sequence.forEach((f) => {
+    (f.tags || []).forEach((tag) => {
+      if (!patterns[tag]) patterns[tag] = { positive: 0, negative: 0 };
+      if (f.signal === 'positive') patterns[tag].positive++;
+      else patterns[tag].negative++;
+    });
+  });
+  return patterns;
+}
+
+function buildSequenceFeatures(recentEntries, currentEntry) {
+  const sequence = [...recentEntries, currentEntry];
+  return {
+    rewardSequence: sequence.map((f) => (f.signal === 'positive' ? 1 : -1)),
+    tagFrequency: sequence.reduce((acc, f) => {
+      (f.tags || []).forEach((tag) => {
+        acc[tag] = (acc[tag] || 0) + 1;
+      });
+      return acc;
+    }, {}),
+    recentTrend: calculateTrend(sequence.slice(-5).map((f) => (f.signal === 'positive' ? 1 : -1))),
+    timeGaps: calculateTimeGaps(sequence),
+    actionPatterns: extractActionPatterns(sequence),
+  };
+}
+
+function appendSequence(feedbackEvent, paths) {
+  const sequencePath = path.join(paths.FEEDBACK_DIR, 'feedback-sequences.jsonl');
+  const recent = readJSONL(paths.FEEDBACK_LOG_PATH).slice(-SEQUENCE_WINDOW);
+  const features = buildSequenceFeatures(recent, feedbackEvent);
+  const entry = {
+    id: `seq_${Date.now()}`,
+    timestamp: new Date().toISOString(),
+    targetReward: feedbackEvent.signal === 'positive' ? 1 : -1,
+    targetTags: feedbackEvent.tags,
+    features,
+    label: feedbackEvent.signal === 'positive' ? 'positive' : 'negative',
+  };
+  appendJSONL(sequencePath, entry);
+}
+
+function updateDiversityTracking(feedbackEvent, paths) {
+  const diversityPath = path.join(paths.FEEDBACK_DIR, 'diversity-tracking.json');
+  let diversity = { domains: {}, lastUpdated: null, diversityScore: 0 };
+  if (fs.existsSync(diversityPath)) {
+    try {
+      diversity = JSON.parse(fs.readFileSync(diversityPath, 'utf-8'));
+    } catch {
+      // start fresh on parse error
+    }
+  }
+
+  const domain = inferDomain(feedbackEvent.tags, feedbackEvent.context);
+  if (!diversity.domains[domain]) {
+    diversity.domains[domain] = { count: 0, positive: 0, negative: 0, lastSeen: null };
+  }
+
+  diversity.domains[domain].count++;
+  diversity.domains[domain].lastSeen = feedbackEvent.timestamp;
+  if (feedbackEvent.signal === 'positive') diversity.domains[domain].positive++;
+  else diversity.domains[domain].negative++;
+
+  const totalFeedback = Object.values(diversity.domains).reduce((s, d) => s + d.count, 0);
+  const domainCount = Object.keys(diversity.domains).length;
+  const idealPerDomain = totalFeedback / DOMAIN_CATEGORIES.length;
+  const variance = Object.values(diversity.domains).reduce((s, d) => {
+    return s + Math.pow(d.count - idealPerDomain, 2);
+  }, 0) / Math.max(domainCount, 1);
+
+  diversity.diversityScore = Math.max(0, 100 - Math.sqrt(variance) * 10).toFixed(1);
+  diversity.lastUpdated = new Date().toISOString();
+  diversity.recommendation = Number(diversity.diversityScore) < 50
+    ? `Low diversity (${diversity.diversityScore}%). Try feedback in: ${DOMAIN_CATEGORIES.filter((d) => !diversity.domains[d]).join(', ')}`
+    : `Good diversity (${diversity.diversityScore}%)`;
+
+  fs.writeFileSync(diversityPath, JSON.stringify(diversity, null, 2) + '\n');
 }
 
 function captureFeedback(params) {
@@ -229,6 +372,33 @@ function captureFeedback(params) {
       // Non-critical; feedback remains in primary logs
     }
   }
+
+  // ML side-effects: sequence tracking and diversity (non-blocking — primary write already succeeded)
+  const mlPaths = getFeedbackPaths();
+  try {
+    appendSequence(feedbackEvent, mlPaths);
+  } catch (err) {
+    // Sequence tracking failure is non-critical
+  }
+  try {
+    updateDiversityTracking(feedbackEvent, mlPaths);
+  } catch (err) {
+    // Diversity tracking failure is non-critical
+  }
+
+  // Vector storage side-effect (non-blocking — primary write already succeeded)
+  const vectorStore = getVectorStoreModule();
+  if (vectorStore) {
+    vectorStore.upsertFeedback(feedbackEvent).catch(() => {
+      // Non-critical; primary feedback log is the source of truth
+    });
+  }
+
+  // RLAIF self-audit side-effect (non-blocking — 4th enrichment layer)
+  try {
+    const sam = getSelfAuditModule();
+    if (sam) sam.selfAuditAndLog(feedbackEvent, mlPaths);
+  } catch (_err) { /* non-critical */ }
 
   summary.accepted += 1;
   summary.lastUpdated = now;
@@ -570,6 +740,7 @@ module.exports = {
   feedbackSummary,
   readJSONL,
   getFeedbackPaths,
+  inferDomain,
   get FEEDBACK_LOG_PATH() {
     return getFeedbackPaths().FEEDBACK_LOG_PATH;
   },

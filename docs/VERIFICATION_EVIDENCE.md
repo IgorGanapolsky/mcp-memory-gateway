@@ -1,4 +1,26 @@
-# Verification Evidence (March 3, 2026)
+# Verification Evidence (March 4, 2026)
+
+## Phase 5 RLAIF and DPO Optimization proof
+
+Command:
+
+```bash
+node scripts/prove-rlaif.js
+```
+
+Observed result:
+
+- Summary: `4 passed`, `0 failed`
+- Evidence artifacts:
+  - `proof/rlaif-report.json`
+  - `proof/rlaif-report.md`
+- Requirements verified:
+  - DPO-01: selfAudit() returns score float in [0,1] with 6 constraints; selfAuditAndLog() writes self-score-log.jsonl
+  - DPO-02: dpoOptimizer.run() writes dpo-model.json with generated + pairs_processed fields
+  - DPO-03: extractMetaPolicyRules() extracts rules from seeded negative entries; meta-policy-rules.json written
+  - DPO-04: node --test all 3 RLAIF test files: 24 passing tests, 0 failures; delta from Phase 4 baseline (93): +24 RLAIF tests = 117 total
+
+
 
 ## Automated test suite
 
