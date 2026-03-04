@@ -34,6 +34,7 @@
     "prove:loop-closure": "node scripts/prove-loop-closure.js",
     "prove:intelligence": "node scripts/prove-intelligence.js",
     "prove:training-export": "node scripts/prove-training-export.js",
+    "prove:v2-milestone": "node scripts/prove-v2-milestone.js",
     "feedback:export:pytorch": "node scripts/export-training.js --pytorch",
     "feedback:export:csv": "node scripts/export-training.js --csv",
     "feedback:export:actions": "node scripts/export-training.js --actions",
