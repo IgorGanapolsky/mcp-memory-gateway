@@ -1,10 +1,10 @@
 {
   "phase": "04-lancedb-vector-storage",
-  "generated": "2026-03-04T20:07:34.884Z",
+  "generated": "2026-03-04T20:08:06.796Z",
   "requirements": {
     "VEC-01": {
       "status": "pass",
-      "evidence": "lancedb dir created at /var/folders/yw/2qhx3yzj0psf87rdxh8lqlmm0000gp/T/prove-lancedb-xWaBV1/lancedb. upsertFeedback() resolved, searchSimilar() returned 1 result(s) including proof-vec01. Table name: rlhf_memories."
+      "evidence": "lancedb dir created at /var/folders/yw/2qhx3yzj0psf87rdxh8lqlmm0000gp/T/prove-lancedb-xUYqZA/lancedb. upsertFeedback() resolved, searchSimilar() returned 1 result(s) including proof-vec01. Table name: rlhf_memories."
     },
     "VEC-02": {
       "status": "pass",
