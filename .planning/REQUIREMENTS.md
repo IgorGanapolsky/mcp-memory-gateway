@@ -17,7 +17,7 @@
 - [x] **ML-02**: Exponential time-decay (half-life 7 days) weights recent feedback higher
 - [x] **ML-03**: LSTM/Transformer sequence tracking writes feedback-sequences.jsonl with sliding window of N=10
 - [x] **ML-04**: Diversity tracking produces per-domain coverage scores and diversityScore metric
-- [ ] **ML-05**: All ML features have unit tests proving correct behavior
+- [x] **ML-05**: All ML features have unit tests proving correct behavior
 - [ ] **ML-06**: Proof report generated in proof/ directory for ML features
 
 ### Governance into Subway
@@ -79,7 +79,7 @@
 | ML-02 | Phase 2: ML into rlhf-feedback-loop | Complete |
 | ML-03 | Phase 2: ML into rlhf-feedback-loop | Complete |
 | ML-04 | Phase 2: ML into rlhf-feedback-loop | Complete |
-| ML-05 | Phase 2: ML into rlhf-feedback-loop | Pending |
+| ML-05 | Phase 2: ML into rlhf-feedback-loop | Complete |
 | ML-06 | Phase 2: ML into rlhf-feedback-loop | Pending |
 | GOV-01 | Phase 3: Governance into Subway | Pending |
 | GOV-02 | Phase 3: Governance into Subway | Pending |

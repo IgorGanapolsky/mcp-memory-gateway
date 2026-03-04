@@ -41,6 +41,8 @@ Progress: [███░░░░░░░] 28%
 | 01-contract-alignment P02 | 20min | 2 tasks | 2 files |
 | Phase 02-ml-into-rlhf-feedback-loop P02-01 | 8 | 1 tasks | 1 files |
 | Phase 02-ml-into-rlhf-feedback-loop P02-02 | 20min | 2 tasks | 2 files |
+| Phase 03-governance-into-subway P3-02 | 20min | 2 tasks | 9 files |
+| Phase 02-ml-into-rlhf-feedback-loop P02-04 | 10min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -60,6 +62,9 @@ Progress: [███░░░░░░░] 28%
 - [Phase 02-ml-into-rlhf-feedback-loop P02-02]: ML side-effects (sequence + diversity) inline in feedback-loop.js, not a separate module — mirrors Subway architecture
 - [Phase 02-ml-into-rlhf-feedback-loop P02-02]: Python trainer PROJECT_ROOT = Path(__file__).parent.parent (2 levels, not Subway's 3)
 - [Phase 02-ml-into-rlhf-feedback-loop P02-02]: rewardSequence uses f.signal ('positive'/'negative'), not f.reward (1/-1) — rlhf schema difference from Subway
+- [Phase 03-governance-into-subway]: PROJECT_ROOT uses path.join(__dirname, '..', '..', '..') in Subway — 3 levels up from .claude/scripts/feedback/ to repo root
+- [Phase 02-ml-into-rlhf-feedback-loop]: require.cache invalidation per test ensures env var RLHF_FEEDBACK_DIR changes take effect for re-required modules in node:test suites
+- [Phase 02-ml-into-rlhf-feedback-loop]: ML-05 test coverage for ML-03 and ML-04 implemented as integration-style tmpdir tests in 02-04
 
 ### Pending Todos
 
