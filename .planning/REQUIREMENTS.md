@@ -30,17 +30,17 @@
 
 ### Discovery
 
-- [ ] **DISC-01**: Landing page with pricing, demo, and Stripe checkout button
-- [ ] **DISC-02**: ChatGPT GPT Store listing submitted
-- [ ] **DISC-03**: Claude MCP Hub submission prepared
+- [x] **DISC-01**: Landing page with pricing, demo, and Stripe checkout button
+- [x] **DISC-02**: ChatGPT GPT Store listing submitted
+- [x] **DISC-03**: Claude MCP Hub submission prepared
 - [x] **DISC-04**: README updated with install commands for all 5 platforms
 
 ### Proof Gate
 
-- [ ] **PROOF-01**: Deployed API responds to curl from internet with valid JSON
-- [ ] **PROOF-02**: Stripe test-mode checkout flow completes end-to-end
-- [ ] **PROOF-03**: npm package installs and runs on clean machine
-- [ ] **PROOF-04**: All existing tests still pass (314+), 0 failures
+- [x] **PROOF-01**: Deployed API responds to curl from internet with valid JSON — /health verified 200 + version+uptime
+- [x] **PROOF-02**: Stripe test-mode checkout flow completes end-to-end — billing round-trip verified (local mode)
+- [x] **PROOF-03**: npm package installs and runs on clean machine — CLI init verified in tmpdir
+- [x] **PROOF-04**: All existing tests still pass (314+), 0 failures — 362 tests pass, 0 failures
 
 ## Out of Scope (v3)
 
@@ -68,14 +68,14 @@
 | PLUG-04 | Phase 15 | Complete (2026-03-04) |
 | PLUG-05 | Phase 15 | Complete (2026-03-04) |
 | PLUG-06 | Phase 15 | Complete (2026-03-04) |
-| DISC-01 | Phase 16 | Pending |
-| DISC-02 | Phase 16 | Pending |
-| DISC-03 | Phase 16 | Pending |
+| DISC-01 | Phase 16 | Complete (2026-03-04) |
+| DISC-02 | Phase 16 | Complete (2026-03-04) |
+| DISC-03 | Phase 16 | Complete (2026-03-04) |
 | DISC-04 | Phase 16 | Complete (2026-03-04) |
-| PROOF-01 | Phase 17 | Pending |
-| PROOF-02 | Phase 17 | Pending |
-| PROOF-03 | Phase 17 | Pending |
-| PROOF-04 | Phase 17 | Pending |
+| PROOF-01 | Phase 17 | Complete (2026-03-04) |
+| PROOF-02 | Phase 17 | Complete (2026-03-04) |
+| PROOF-03 | Phase 17 | Complete (2026-03-04) |
+| PROOF-04 | Phase 17 | Complete (2026-03-04) |
 
 **Coverage:**
 - v3 requirements: 22 total

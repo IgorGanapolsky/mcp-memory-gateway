@@ -4,7 +4,7 @@
 
 - [x] **v1.0 Bidirectional Feature Sync** - Phases 1-5 (shipped 2026-03-04)
 - [x] **v2.0 Production Readiness** - Phases 6-12 (shipped 2026-03-04)
-- [ ] **v3.0 Commercialization** - Phases 13-17 (in progress)
+- [x] **v3.0 Commercialization** - Phases 13-17 (shipped 2026-03-04)
 
 ## Phases
 
@@ -268,7 +268,10 @@ Plans:
   2. The main README on GitHub shows one-liner install commands for all 5 platforms that copy-paste directly into the respective tool's config
   3. The ChatGPT GPT Store submission is prepared and submitted with title, description, and actions schema pointing to the deployed API
   4. The Claude MCP Hub submission document is complete with name, description, install command, and capabilities listed
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [x] 16-01-PLAN.md — Landing page + GPT Store + MCP Hub submissions + README pricing (DISC-01, DISC-02, DISC-03, DISC-04)
 
 ### Phase 17: Proof Gate
 **Goal**: All v3 delivery claims are verifiable — the deployed API, billing flow, npm package, and test suite are proven end-to-end before the milestone is declared complete
@@ -279,7 +282,10 @@ Plans:
   2. A Stripe test-mode checkout completes end-to-end: payment succeeds, API key is provisioned, key authenticates a subsequent request
   3. Running `npx rlhf-feedback-loop init` on a clean machine with the published npm package completes without error
   4. Running `npm test` passes all 314+ tests with 0 failures — no regressions from v3 changes
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [x] 17-01-PLAN.md — prove-v3-milestone.js: PROOF-01..04 all PASS (7/7 checks); 362 tests, 0 failures (PROOF-01, PROOF-02, PROOF-03, PROOF-04)
 
 ## Progress
 
@@ -310,5 +316,5 @@ Phase 13 → Phase 14 + Phase 15 (parallel after 13) → Phase 16 (after 14 + 15
 | 13. Deployment | v3.0 | Complete    | 2026-03-04 | 2026-03-04 |
 | 14. Billing | v3.0 | 1/1 | Complete | 2026-03-04 |
 | 15. Plugin Distribution | v3.0 | 1/1 | Complete | 2026-03-04 |
-| 16. Discovery | v3.0 | 0/TBD | Not started | - |
-| 17. Proof Gate | v3.0 | 0/TBD | Not started | - |
+| 16. Discovery | v3.0 | 1/1 | Complete | 2026-03-04 |
+| 17. Proof Gate | v3.0 | 1/1 | Complete | 2026-03-04 |

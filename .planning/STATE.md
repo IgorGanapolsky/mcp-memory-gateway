@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-03-04)
 
 **Core value:** Deploy, bill, distribute — first paying customer ($100/day north star)
-**Current focus:** v3.0 Commercialization — Phase 15: Plugin Distribution (plan 1 complete)
+**Current focus:** v3.0 Commercialization — Phase 17: Proof Gate complete
 
 ## Current Position
 
-Phase: 15 of 17 (Plugin Distribution)
-Plan: 1/1 complete — Phase 15 Plugin Distribution complete; PLUG-01 through PLUG-06 fulfilled
-Status: Phase 15 execution complete — npx CLI scaffolds .rlhf/, 5-platform INSTALL.md guides live, README Quick Install section added, 362 tests pass (13 new CLI tests)
-Last activity: 2026-03-04 — Phase 15 plan executed; 362 tests pass (13 new CLI tests); bin/cli.js + 5 plugin install guides
+Phase: 17 of 17 (Proof Gate)
+Plan: 1/1 complete — Phase 17 Proof Gate complete; all PROOF-01 through PROOF-04 verified
+Status: v3.0 milestone COMPLETE — 362 tests pass, /health endpoint live, billing round-trip verified, CLI init verified, landing page + submissions ready
+Last activity: 2026-03-04 — Phase 16 + 17 executed; landing page, GPT Store + MCP Hub submissions, prove-v3-milestone.js (7/7 checks PASS)
 
-Progress: [█████████████░░░░░░░] ~65% (Phase 15 Plugin Distribution complete; Phase 16 Discovery next)
+Progress: [████████████████████] ~100% (v3.0 Commercialization complete)
 
 ## Performance Metrics
 
@@ -52,6 +52,11 @@ Progress: [█████████████░░░░░░░] ~65% (P
 - [Phase 14]: Local mode when STRIPE_SECRET_KEY absent — all Stripe calls gracefully no-op
 - [Phase 15]: bin/cli.js generates standalone capture-feedback.js inline — no runtime dep on repo scripts, works on any clean machine
 - [Phase 15]: plugins/amp-skill/ created as separate directory from adapters/amp/ to match install pattern parity with other platforms
+- [Phase 16]: Landing page is pure static HTML — no build step, deployable to GitHub Pages/Vercel as-is; Stripe checkout URL is a placeholder pending Railway live deployment
+- [Phase 16]: GPT Store submission includes both full openapi.yaml reference and inline minimal schema for quick copy-paste
+- [Phase 16]: MCP Hub submission targets both modelcontextprotocol/servers (official PR) and mcp.so (community form)
+- [Phase 17]: RLHF_ALLOW_INSECURE=true must not bleed into npm test env — disables auth middleware and breaks auth test suite
+- [Phase 17]: prove-v3-milestone.js sums all node:test ℹ pass N lines across all sub-scripts to get total count
 
 ### Pending Todos
 
@@ -67,6 +72,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-03-04
-Stopped at: Phase 15-01 complete — bin/cli.js, 5-platform INSTALL.md, README Quick Install, 13 CLI tests; commit 53f98dc
+Stopped at: Phase 17-01 complete — prove-v3-milestone.js 7/7 PASS; commit ab90e04
 Resume file: None
-Next action: Phase 16 (Discovery) — landing page, ChatGPT GPT Store listing, Claude MCP Hub submission
+Next action: v3.0 Commercialization milestone COMPLETE — deploy to Railway, submit to GPT Store + MCP Hub, publish npm package
