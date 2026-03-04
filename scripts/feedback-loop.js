@@ -17,6 +17,7 @@ const {
 const {
   buildRubricEvaluation,
 } = require('./rubric-engine');
+const { recordAction, attributeFeedback } = require('./feedback-attribution');
 
 const PROJECT_ROOT = path.join(__dirname, '..');
 const DEFAULT_FEEDBACK_DIR = path.join(PROJECT_ROOT, '.claude', 'memory', 'feedback');
@@ -154,6 +155,64 @@ function inferDomain(tags, context) {
   if (tagSet.has('arch') || tagSet.has('architecture') || ctx.includes('design')) return 'architecture';
   if (tagSet.has('data') || tagSet.has('schema') || ctx.includes('schema')) return 'data-modeling';
   return 'general';
+}
+
+/**
+ * Infer granular outcome category from signal + context.
+ * Satisfies QUAL-03 — beyond binary up/down.
+ * @param {string} signal - 'positive' or 'negative'
+ * @param {string} context - feedback context string
+ * @returns {string} granular outcome category
+ */
+function inferOutcome(signal, context) {
+  const cl = (context || '').toLowerCase();
+  if (signal === 'positive') {
+    if (cl.includes('first try') || cl.includes('immediately') || cl.includes('right away')) return 'quick-success';
+    if (cl.includes('thorough') || cl.includes('comprehensive') || cl.includes('in-depth')) return 'deep-success';
+    if (cl.includes('creative') || cl.includes('novel') || cl.includes('elegant')) return 'creative-success';
+    if (cl.includes('partial') || cl.includes('mostly') || cl.includes('some issues')) return 'partial-success';
+    return 'standard-success';
+  } else {
+    if (cl.includes('wrong') || cl.includes('incorrect') || cl.includes('factual')) return 'factual-error';
+    if (cl.includes('shallow') || cl.includes('surface') || cl.includes('superficial')) return 'insufficient-depth';
+    if (cl.includes('slow') || cl.includes('took too long') || cl.includes('inefficient')) return 'efficiency-issue';
+    if (cl.includes('assumption') || cl.includes('guessed') || cl.includes('assumed')) return 'false-assumption';
+    if (cl.includes('partial') || cl.includes('incomplete') || cl.includes('missing')) return 'incomplete';
+    return 'standard-failure';
+  }
+}
+
+/**
+ * Enrich feedbackEvent with richContext metadata.
+ * Satisfies QUAL-02 — domain, filePaths, errorType, outcomeCategory.
+ * Non-throwing: returns original event on any error.
+ * @param {object} feedbackEvent - base feedback event
+ * @param {object} params - original captureFeedback params
+ * @returns {object} enriched feedbackEvent
+ */
+function enrichFeedbackContext(feedbackEvent, params) {
+  try {
+    const domain = inferDomain(feedbackEvent.tags, feedbackEvent.context);
+    const outcomeCategory = inferOutcome(feedbackEvent.signal, feedbackEvent.context);
+    const filePaths = Array.isArray(params.filePaths)
+      ? params.filePaths
+      : typeof params.filePaths === 'string' && params.filePaths.trim()
+        ? params.filePaths.split(',').map((f) => f.trim()).filter(Boolean)
+        : [];
+    const errorType = params.errorType || null;
+
+    return {
+      ...feedbackEvent,
+      richContext: {
+        domain,
+        filePaths,
+        errorType,
+        outcomeCategory,
+      },
+    };
+  } catch (_err) {
+    return feedbackEvent;
+  }
 }
 
 function calculateTrend(rewards) {
@@ -297,7 +356,7 @@ function captureFeedback(params) {
   });
 
   const now = new Date().toISOString();
-  const feedbackEvent = {
+  const rawFeedbackEvent = {
     id: `fb_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
     signal,
     context: params.context || '',
@@ -320,6 +379,9 @@ function captureFeedback(params) {
     actionReason: action.reason || null,
     timestamp: now,
   };
+
+  // Rich context enrichment (QUAL-02, QUAL-03) — non-blocking
+  const feedbackEvent = enrichFeedbackContext(rawFeedbackEvent, params);
 
   const summary = loadSummary();
   summary.total += 1;
@@ -399,6 +461,20 @@ function captureFeedback(params) {
     const sam = getSelfAuditModule();
     if (sam) sam.selfAuditAndLog(feedbackEvent, mlPaths);
   } catch (_err) { /* non-critical */ }
+
+  // Attribution side-effects — fire-and-forget, never throw
+  try {
+    const toolName = feedbackEvent.toolName || feedbackEvent.tool_name || 'unknown';
+    const toolInput = feedbackEvent.context || feedbackEvent.input || '';
+    recordAction(toolName, toolInput);
+    if (feedbackEvent.signal === 'negative') {
+      attributeFeedback('negative', feedbackEvent.context || '');
+    } else if (feedbackEvent.signal === 'positive') {
+      attributeFeedback('positive', feedbackEvent.context || '');
+    }
+  } catch (e) {
+    // attribution is non-blocking
+  }
 
   summary.accepted += 1;
   summary.lastUpdated = now;
@@ -741,6 +817,8 @@ module.exports = {
   readJSONL,
   getFeedbackPaths,
   inferDomain,
+  inferOutcome,
+  enrichFeedbackContext,
   get FEEDBACK_LOG_PATH() {
     return getFeedbackPaths().FEEDBACK_LOG_PATH;
   },

@@ -5,35 +5,39 @@
 See: .planning/PROJECT.md (updated 2026-03-04)
 
 **Core value:** Every synced feature has tests, passes CI, and produces verification evidence — no tech debt
-**Current focus:** ALL PHASES COMPLETE — 2026-03-04
+**Current focus:** v2.0 milestone COMPLETE — all phases done, 314 tests, 0 failures
 
 ## Current Position
 
-Phase: 5 of 5 — COMPLETE (RLAIF and DPO Optimization)
-Plan: 5-03 complete — prove-rlaif.js + proof artifacts; all 4 DPO requirements pass
-Status: ALL PHASES COMPLETE — DPO-01 through DPO-04 verified; Phase 5 complete 2026-03-04
-Last activity: 2026-03-04 — Plan 5-03 complete: prove-rlaif.js created; proof/rlaif-report.md DPO-01..DPO-04 all PASS; 24 RLAIF tests green; npm test 119 total 0 failures
+Phase: 12 — Proof Gate (COMPLETE)
+Plan: 12-01 (complete)
+Status: v2.0 milestone complete — Phases 9, 10, 12 executed; INTL-01..03, XPRT-01..05, PROOF-01..02 all satisfied
+Last activity: 2026-03-04 — Phases 9, 10, 12 executed: all proof gates passing; 314 tests, 0 failures; v2.0 DONE
 
-Progress: [██████████] 100%
+Progress: [██████████] 100% (v2.0)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed (v2.0): 3 (phases 9, 10, 12)
+- Average duration: ~6min
+- Total execution time: ~18min (phases 9-12)
 
-**By Phase:**
+**By Phase (v2.0):**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| Phase 09-intelligence P09-01 | ~8min | 3 tasks | 6 files |
+| Phase 10-training-export P10-01 | ~5min | 3 tasks | 5 files |
+| Phase 12-proof-gate P12-01 | ~3min | 2 tasks | 3 files |
 
 **Recent Trend:**
-- Last 5 plans: none yet
+- Last 5 plans: none yet (v2.0)
 - Trend: -
 
 *Updated after each plan completion*
+
+**v1.0 Historical Metrics:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
@@ -53,6 +57,10 @@ Progress: [██████████] 100%
 | Phase 05-rlaif-and-dpo-optimization P5-02 | 2min | 1 tasks | 3 files |
 | Phase 05-rlaif-and-dpo-optimization P5-01 | 278s | 2 tasks | 8 files |
 | Phase 05-rlaif-and-dpo-optimization P5-03 | 15min | 2 tasks | 6 files |
+| Phase 06-feedback-attribution P06-02 | 135s | 1 tasks | 1 files |
+| Phase 06-feedback-attribution P06-01 | 4min | 2 tasks | 2 files |
+| Phase 06 P03 | 8min | 2 tasks | 3 files |
+| Phase 06 P06-04 | 10min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -94,18 +102,48 @@ Progress: [██████████] 100%
 - [Phase 05-rlaif-and-dpo-optimization]: saveModel() added to thompson-sampling.js — was absent; required by dpo-optimizer for Thompson posterior persistence
 - [Phase 05-rlaif-and-dpo-optimization]: test:rlaif wired into test aggregate; 24 new tests bring total from 93 to 142 (+49 from Phase 4 baseline)
 - [Phase 05-rlaif-and-dpo-optimization]: prove-rlaif.js mirrors prove-lancedb.js — mkdtempSync / env override / execSync pattern; DPO-04 self-validates via execSync node:test
+- [v2.0 Roadmap]: Phase 6 CRITICAL — must execute before 7, 8, 9, 10; attribution fields required by all downstream phases
+- [v2.0 Roadmap]: Phases 7 and 8 are independent of each other — can run in parallel after Phase 6
+- [v2.0 Roadmap]: Phase 9 depends on Phase 6 only — can parallel with 7, 8
+- [v2.0 Roadmap]: Phase 10 depends on Phase 6 and Phase 7 (needs quality-validated data)
+- [v2.0 Roadmap]: Phase 11 (Subway Upgrades) is independent of all v2 rlhf phases — can parallel with 7-10
+- [v2.0 Roadmap]: Phase 12 is the final gate — depends on all prior phases; proof reports cover every v2 phase
+- [v2.0 Roadmap]: v1 final test count is 142 — Phase 12 success criterion requires strictly greater count
+- [Phase 06-feedback-attribution]: hybrid-feedback-context.js evaluatePretool: compiled artifact fast path trusts guard artifact, falls back to live state build — ATTR-03 no-false-positive via hasTwoKeywordHits + count>=2 filter
+- [Phase 06-feedback-attribution]: ROOT = path.join(__dirname, '..') in feedback-attribution.js — 1 level up from scripts/ to repo root (Subway used 2 levels from .claude/scripts/feedback/)
+- [Phase 06-feedback-attribution]: Attribution side-effects placed after RLAIF self-audit in captureFeedback() — fire-and-forget try/catch, feedbackEvent.signal already normalized to 'positive'/'negative'
+- [Phase 06]: Tests go GREEN immediately — modules fully implemented in 06-01/06-02; test:attribution wired into npm test chain
+- [Phase 06-feedback-attribution]: prove-attribution.js mirrors prove-rlaif.js — mkdtempSync/env override/execSync node --test; ATTR-03 self-validates via execSync; all 3 ATTR requirements pass (passed:3, failed:0)
+- [Phase 06-feedback-attribution]: Phase 6 total node-runner test count = 184 (v1 baseline was 142; test:api grew from 93 to 114 after attribution tests added)
+- [Phase 06-feedback-attribution]: test:api now includes tests/feedback-attribution.test.js + tests/hybrid-feedback-context.test.js (21 tests) alongside test:attribution — deliberate duplication for API-level visibility
+- [Phase 07-data-quality]: validate-feedback.js uses signal/id (not feedback/source) — rlhf schema; RLHF_FEEDBACK_DIR resolved at call time not module init
+- [Phase 07-data-quality]: after() hooks in validate-feedback.test.js use async + 200ms pause before rmSync — LanceDB fire-and-forget write races with cleanup
+- [Phase 07-data-quality]: inferOutcome + enrichFeedbackContext inline in feedback-loop.js (not separate module) — mirrors ML side-effects from Phase 2
+- [Phase 08-loop-closure]: feedback-to-rules.js classifySignal checks entry.signal first, then entry.feedback — backward compat with old Subway schema
+- [Phase 08-loop-closure]: feedback-inbox-read.js INBOX_PATH = .claude/feedback-loop/inbox.jsonl (not .claude/memory/feedback/) — dedicated inbox for reflexion-preflight
+- [Phase 08-loop-closure]: feedback-to-memory.js delegates to resolveFeedbackAction + prepareForStorage — reuses existing schema validation, no duplication
+- [Phase 11-subway-upgrades]: Subway vector-store tests require NODE_OPTIONS=--experimental-vm-modules — added to test:governance in Subway package.json
+- [Phase 11-subway-upgrades]: thompson-sampling.js in Subway has inline parseTimestamp — no shared feedback-schema.js in Subway
+- [Phase 11-subway-upgrades]: prove-subway-upgrades.js uses err.stdout + err.stderr pattern for Jest output capture (execSync throws on non-zero exit)
+- [Phase 09-intelligence]: context-engine PROJECT_ROOT = path.join(__dirname, '..') — 1 level from scripts/ to repo root
+- [Phase 09-intelligence]: skill-quality-tracker normalizes both 'up'/'down' (Subway) and 'positive'/'negative' (rlhf) feedback signals; CORRELATION_WINDOW_MS = 60_000
+- [Phase 09-intelligence]: routeQuery falls back to buildKnowledgeIndex() on-the-fly if index file is missing
+- [Phase 10-training-export]: buildPreferencePairs uses tag overlap scoring to match positive+negative pairs; falls back to any unused negative
+- [Phase 10-training-export]: validateMemoryStructure checks _dpoExport flag to conditionally enforce prompt/chosen/rejected fields
+- [Phase 12-proof-gate]: V1_BASELINE_TEST_COUNT = 142; v2 final = 314 (+172); prove-v2-milestone sums all ℹ pass N lines
 
 ### Pending Todos
 
-None yet.
+None — v2.0 milestone complete
 
 ### Blockers/Concerns
 
-- [Phase 4]: Lance file format version compatibility (Python 0.27.1 vs Node.js 0.26.2) not definitively resolved — must verify before Phase 4 implementation
-- [Phase 3]: Subway lint:fix behavior under auto-import-sort not confirmed — must audit `.eslintrc.js` before enabling self-heal
+- [Phase 4]: Lance file format version compatibility (Python 0.27.1 vs Node.js 0.26.2) not definitively resolved — verify before any Phase 11 LanceDB Subway work
+- [Phase 3]: Subway lint:fix behavior under auto-import-sort not confirmed — audit `.eslintrc.js` before enabling self-heal in Phase 11
 
 ## Session Continuity
 
 Last session: 2026-03-04
-Stopped at: Completed 05-rlaif-and-dpo-optimization/5-03-PLAN.md — prove-rlaif.js created; all 4 DPO requirements pass; Phase 5 COMPLETE; ALL PHASES COMPLETE
+Stopped at: Completed Phases 9, 10, 12 — v2.0 milestone DONE; INTL-01..03, XPRT-01..05, PROOF-01..02 all satisfied; 314 tests, 0 failures
 Resume file: None
+Next action: v2.0 complete — consider v3 planning (ADV-01..05 requirements)

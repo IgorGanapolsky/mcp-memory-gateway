@@ -1,107 +1,115 @@
-# Requirements: RLHF Bidirectional Feature Sync
+# Requirements: RLHF v2.0 Production Readiness
 
 **Defined:** 2026-03-04
-**Core Value:** Every synced feature has tests, passes CI, and produces verification evidence — no tech debt
-
-## v1 Requirements
-
-### Contract Alignment
-
-- [x] **CNTR-01**: Export mapping audit confirms all shared function names are compatible between repos
-- [x] **CNTR-02**: Schema divergence resolved — rubricEvaluation parameter handled consistently
-- [x] **CNTR-03**: Timestamp format normalized (ISO 8601 with Z suffix) across both repos
-
-### ML into rlhf-feedback-loop
-
-- [x] **ML-01**: Thompson Sampling Beta-Bernoulli posteriors compute per-category reliability estimates
-- [x] **ML-02**: Exponential time-decay (half-life 7 days) weights recent feedback higher
-- [x] **ML-03**: LSTM/Transformer sequence tracking writes feedback-sequences.jsonl with sliding window of N=10
-- [x] **ML-04**: Diversity tracking produces per-domain coverage scores and diversityScore metric
-- [x] **ML-05**: All ML features have unit tests proving correct behavior
-- [x] **ML-06**: Proof report generated in proof/ directory for ML features
-
-### Governance into Subway
-
-- [x] **GOV-01**: Budget guard enforces $10/month cap with atomic ledger in Subway
-- [x] **GOV-02**: Intent router with policy bundles provides risk-stratified action planning in Subway
-- [x] **GOV-03**: ContextFS with semantic cache (Jaccard, threshold=0.7, TTL=86400s) operates in Subway
-- [x] **GOV-04**: Self-healing monitor detects CI failures and runs fix scripts in Subway
-- [x] **GOV-05**: All governance features have unit tests proving correct behavior
-- [x] **GOV-06**: Proof report generated in proof/ directory for governance features
-
-### LanceDB Vector Storage
-
-- [x] **VEC-01**: LanceDB embedded table stores feedback vectors in rlhf-feedback-loop
-- [x] **VEC-02**: ESM/CJS compatibility resolved via dynamic import pattern
-- [x] **VEC-03**: apache-arrow pinned to compatible version (<=18.1.0)
-- [x] **VEC-04**: Semantic similarity search returns relevant historical feedback
-- [x] **VEC-05**: LanceDB integration has tests and proof report
-
-### RLAIF and DPO Optimization
-
-- [x] **DPO-01**: RLAIF self-scoring grades feedback against CLAUDE.md constraints
-- [x] **DPO-02**: DPO batch optimization builds preference pairs from Thompson Sampling posteriors
-- [x] **DPO-03**: Meta-policy rule extraction produces actionable rules from feedback trends
-- [x] **DPO-04**: All RLAIF features have tests and proof report
+**Core Value:** Close all CRITICAL and IMPORTANT gaps — both systems production-ready with full feedback loop closure
 
 ## v2 Requirements
 
-### Advanced ML
+### Feedback Attribution (Subway → rlhf) — CRITICAL
 
-- **ADV-01**: Hybrid semantic search (BM25 + vector fusion) for feedback retrieval
-- **ADV-02**: Model snapshot lift comparison (>=5% improvement gate)
-- **ADV-03**: Agentic memory evolution (A-Mem Zettelkasten pattern)
+- [x] **ATTR-01**: Feedback attribution traces each feedback signal back to the specific agent action that caused it
+- [x] **ATTR-02**: Hybrid feedback context guards pre-tool execution based on attributed feedback signals
+- [x] **ATTR-03**: Both modules have unit tests proving correct behavior
 
-### Cross-Platform
+### Data Quality (Subway → rlhf)
 
-- **XPLAT-01**: MCP profile-based tool allowlisting in Subway
-- **XPLAT-02**: Subagent profile isolation in Subway
+- [x] **QUAL-01**: Validate-feedback audits schema correctness, semantic quality, and anomaly detection on feedback entries
+- [x] **QUAL-02**: Rich context enrichment (domain, filePaths, errorType, outcomeCategory) added to capture pipeline
+- [x] **QUAL-03**: inferOutcome classifies feedback beyond binary into granular categories (quick-success, factual-error, etc.)
+- [x] **QUAL-04**: All data quality features have unit tests
+
+### Loop Closure (Subway → rlhf)
+
+- [x] **LOOP-01**: Feedback-to-rules distills feedback patterns into actionable CLAUDE.md behavior rules
+- [x] **LOOP-02**: Plan gate validates PRD markdown schema before execution
+- [x] **LOOP-03**: Feedback inbox reader provides cursor-based reading for reflexion-preflight
+- [x] **LOOP-04**: Feedback-to-memory bridge converts stdin JSON to MCP memory format
+- [x] **LOOP-05**: All loop closure features have unit tests
+
+### Intelligence (Subway → rlhf)
+
+- [ ] **INTL-01**: Context engine routes queries to pre-computed knowledge bundles for low-latency retrieval
+- [ ] **INTL-02**: Skill quality tracker correlates tool call metrics to feedback signals by timestamp proximity
+- [ ] **INTL-03**: Both modules have unit tests
+
+### Training Export (Subway → rlhf)
+
+- [ ] **XPRT-01**: PyTorch JSON training export format supported alongside JSONL
+- [ ] **XPRT-02**: CSV summary export format supported
+- [ ] **XPRT-03**: Action analysis report generated from feedback data
+- [ ] **XPRT-04**: validateMemoryStructure() gates DPO export to prevent bad data in training pairs
+- [ ] **XPRT-05**: All export features have unit tests
+
+### Subway Upgrades (rlhf → Subway)
+
+- [x] **SUBW-01**: LanceDB vector store with HuggingFace embeddings ported to Subway
+- [x] **SUBW-02**: DPO optimizer (offline batch) ported to Subway
+- [x] **SUBW-03**: Thompson Sampling JS module ported to Subway
+- [x] **SUBW-04**: Self-healing GH Action workflows added to Subway
+- [x] **SUBW-05**: All Subway upgrades have tests and proof report
+
+### Proof Gate
+
+- [ ] **PROOF-01**: Proof reports generated for all v2 features in proof/ directory
+- [ ] **PROOF-02**: npm test passes with increased test count, 0 failures
+
+## Future Requirements (v3)
+
+- **ADV-01**: Hybrid semantic search (BM25 + vector fusion)
+- **ADV-02**: Model snapshot lift comparison (>=5% gate)
+- **ADV-03**: Agentic memory evolution (A-Mem Zettelkasten)
+- **ADV-04**: Autonomy decision engine
+- **ADV-05**: Agent-routing config (oracle/librarian/task/quick)
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
 | Multi-adapter pattern for Subway | Subway only uses Claude; dead code burden |
-| Full repo merge | Repos serve different purposes (product vs app) |
-| External database (PostgreSQL, Redis) | $10/month budget; LanceDB + JSONL cost $0 |
-| PaperBanana PNG diagrams | Blocked on Gemini API quota; Mermaid sufficient |
-| Real-time streaming aggregation | JSONL append is atomic and sufficient at scale |
-| Reward model fine-tuning via API | Budget-prohibitive; Thompson Sampling + DPO is local |
+| Python RAG scripts for rlhf | LanceDB + vector-store.js handles this natively |
+| Streak tracking | Nice-to-have, defer to v3 |
+| success-patterns.md distillation | Nice-to-have, defer to v3 |
+| decisionTrace fields | Nice-to-have, defer to v3 |
+| Memory maintenance GH Action | Nice-to-have, defer to v3 |
+| Any feature requiring paid API calls | $10/mo budget constraint |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CNTR-01 | Phase 1: Contract Alignment | Complete |
-| CNTR-02 | Phase 1: Contract Alignment | Complete |
-| CNTR-03 | Phase 1: Contract Alignment | Complete |
-| ML-01 | Phase 2: ML into rlhf-feedback-loop | Complete |
-| ML-02 | Phase 2: ML into rlhf-feedback-loop | Complete |
-| ML-03 | Phase 2: ML into rlhf-feedback-loop | Complete |
-| ML-04 | Phase 2: ML into rlhf-feedback-loop | Complete |
-| ML-05 | Phase 2: ML into rlhf-feedback-loop | Complete |
-| ML-06 | Phase 2: ML into rlhf-feedback-loop | Complete |
-| GOV-01 | Phase 3: Governance into Subway | Complete |
-| GOV-02 | Phase 3: Governance into Subway | Complete |
-| GOV-03 | Phase 3: Governance into Subway | Complete |
-| GOV-04 | Phase 3: Governance into Subway | Complete |
-| GOV-05 | Phase 3: Governance into Subway | Complete |
-| GOV-06 | Phase 3: Governance into Subway | Complete |
-| VEC-01 | Phase 4: LanceDB Vector Storage | Complete |
-| VEC-02 | Phase 4: LanceDB Vector Storage | Complete |
-| VEC-03 | Phase 4: LanceDB Vector Storage | Complete |
-| VEC-04 | Phase 4: LanceDB Vector Storage | Complete |
-| VEC-05 | Phase 4: LanceDB Vector Storage | Complete |
-| DPO-01 | Phase 5: RLAIF and DPO Optimization | Complete |
-| DPO-02 | Phase 5: RLAIF and DPO Optimization | Complete |
-| DPO-03 | Phase 5: RLAIF and DPO Optimization | Complete |
-| DPO-04 | Phase 5: RLAIF and DPO Optimization | Complete |
+| ATTR-01 | Phase 6 | Complete |
+| ATTR-02 | Phase 6 | Complete |
+| ATTR-03 | Phase 6 | Complete |
+| QUAL-01 | Phase 7 | Complete |
+| QUAL-02 | Phase 7 | Complete |
+| QUAL-03 | Phase 7 | Complete |
+| QUAL-04 | Phase 7 | Complete |
+| LOOP-01 | Phase 8 | Complete |
+| LOOP-02 | Phase 8 | Complete |
+| LOOP-03 | Phase 8 | Complete |
+| LOOP-04 | Phase 8 | Complete |
+| LOOP-05 | Phase 8 | Complete |
+| INTL-01 | Phase 9 | Pending |
+| INTL-02 | Phase 9 | Pending |
+| INTL-03 | Phase 9 | Pending |
+| XPRT-01 | Phase 10 | Pending |
+| XPRT-02 | Phase 10 | Pending |
+| XPRT-03 | Phase 10 | Pending |
+| XPRT-04 | Phase 10 | Pending |
+| XPRT-05 | Phase 10 | Pending |
+| SUBW-01 | Phase 11 | Complete |
+| SUBW-02 | Phase 11 | Complete |
+| SUBW-03 | Phase 11 | Complete |
+| SUBW-04 | Phase 11 | Complete |
+| SUBW-05 | Phase 11 | Complete |
+| PROOF-01 | Phase 12 | Pending |
+| PROOF-02 | Phase 12 | Pending |
 
 **Coverage:**
-- v1 requirements: 24 total
-- Mapped to phases: 24
+- v2 requirements: 27 total
+- Mapped to phases: 27
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-04*
-*Last updated: 2026-03-04 after roadmap creation*
+*Last updated: 2026-03-04 — traceability complete after v2.0 roadmap (Phases 6-12)*
