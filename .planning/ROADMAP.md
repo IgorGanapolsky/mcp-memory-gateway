@@ -45,8 +45,15 @@ Plans:
   2. Feedback older than 7 days receives a lower weight than recent feedback — verifiable by inspecting the exponential decay calculation in `parseTimestamp()` + decay weight output
   3. `feedback-sequences.jsonl` is written and contains sliding windows of N=10 feedback entries per category
   4. `diversity-tracking.json` exists and contains per-domain `coverage_score` and a `diversityScore` metric
-  5. All ML features pass unit tests (test count increases from Phase 1 baseline) and `proof/ml-sync-report.md` exists with evidence
-**Plans**: TBD
+  5. All ML features pass unit tests (test count increases from Phase 1 baseline) and `proof/ml-features-report.md` exists with evidence
+**Plans**: 5 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Thompson Sampling JS module (scripts/thompson-sampling.js) — ML-01, ML-02
+- [ ] 02-02-PLAN.md — Python trainer (scripts/train_from_feedback.py) + sequence/diversity side-effects in feedback-loop.js — ML-03, ML-04
+- [ ] 02-03-PLAN.md — TDD: Thompson Sampling + time-decay tests (tests/thompson-sampling.test.js) — ML-01, ML-02, ML-05
+- [ ] 02-04-PLAN.md — TDD: sequence and diversity tests (tests/feedback-sequences.test.js, tests/diversity-tracking.test.js) — ML-03, ML-04, ML-05
+- [ ] 02-05-PLAN.md — npm ml:* scripts + proof/ml-features-report.md — ML-06
 
 ### Phase 3: Governance into Subway
 **Goal**: Subway gains production-grade governance — budget enforcement, risk-stratified action planning, semantic context caching, and self-healing CI — all ported from rlhf-feedback-loop with zero new npm dependencies
@@ -97,7 +104,7 @@ Phase 1 → Phase 2 and Phase 3 (parallel) → Phase 4 → Phase 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Contract Alignment | 3/3 | Complete    | 2026-03-04 |
-| 2. ML into rlhf-feedback-loop | 0/TBD | Not started | - |
+| 2. ML into rlhf-feedback-loop | 0/5 | Not started | - |
 | 3. Governance into Subway | 0/TBD | Not started | - |
 | 4. LanceDB Vector Storage | 0/TBD | Not started | - |
 | 5. RLAIF and DPO Optimization | 0/TBD | Not started | - |
