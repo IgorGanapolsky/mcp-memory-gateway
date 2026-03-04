@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-03-04)
 
 **Core value:** Every synced feature has tests, passes CI, and produces verification evidence — no tech debt
-**Current focus:** Phase 2: ML into rlhf-feedback-loop
+**Current focus:** Phase 4: LanceDB Vector Storage
 
 ## Current Position
 
-Phase: 2 of 5 (ML into rlhf-feedback-loop)
-Plan: 3 of 5 in current phase
-Status: Phase 2 in progress — 02-01, 02-02, 02-03 complete
-Last activity: 2026-03-04 — Plan 02-03 complete: Thompson Sampling TDD test suite (15 tests, 6 describe blocks, ML-05 satisfied)
+Phase: 3 of 5 — COMPLETE (Governance into Subway)
+Plan: Phase 3 all 4 plans complete
+Status: Phase 3 complete — 3-01, 3-02, 3-03, 3-04 done; GOV-01..GOV-06 all marked complete
+Last activity: 2026-03-04 — Plan 3-04 complete: Phase 3 proof report generated; all governance scripts operational in Subway with 43 Jest tests passing
 
 Progress: [████░░░░░░] 36%
 
@@ -74,6 +74,7 @@ Progress: [████░░░░░░] 36%
 - [Phase 02-ml-into-rlhf-feedback-loop]: SC-5 delta confirmed: Phase 2 total 89 node-runner tests vs 60 Phase 1 baseline (+29 ML tests)
 - [Phase 03-governance-into-subway]: KNOWN_FIX_SCRIPTS uses object array {name,command} in Subway self-heal.js — lookup via command[2] for correct npm script name matching
 - [Phase 03-governance-into-subway]: jest.governance.config.js (testEnvironment:node) required in Subway — main jest-expo config excludes scripts/ from test runs
+- [Phase 03-governance-into-subway]: All 6 governance scripts ported to Subway with zero new npm deps; 5 Jest test files passing (43 tests); proof committed in rlhf/proof/governance-into-subway/
 
 ### Pending Todos
 
@@ -87,5 +88,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-04
-Stopped at: Completed 02-ml-into-rlhf-feedback-loop/02-03-PLAN.md — 02-03-SUMMARY.md created; ML-05 complete (Thompson Sampling TDD test suite, 15 tests)
+Stopped at: Completed 03-governance-into-subway/3-04-PLAN.md — Phase 3 complete; gov-sync-report.md created; GOV-01..GOV-06 all marked complete
 Resume file: None

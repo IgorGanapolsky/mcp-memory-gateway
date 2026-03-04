@@ -23,11 +23,11 @@
 ### Governance into Subway
 
 - [x] **GOV-01**: Budget guard enforces $10/month cap with atomic ledger in Subway
-- [ ] **GOV-02**: Intent router with policy bundles provides risk-stratified action planning in Subway
+- [x] **GOV-02**: Intent router with policy bundles provides risk-stratified action planning in Subway
 - [x] **GOV-03**: ContextFS with semantic cache (Jaccard, threshold=0.7, TTL=86400s) operates in Subway
 - [x] **GOV-04**: Self-healing monitor detects CI failures and runs fix scripts in Subway
 - [x] **GOV-05**: All governance features have unit tests proving correct behavior
-- [ ] **GOV-06**: Proof report generated in proof/ directory for governance features
+- [x] **GOV-06**: Proof report generated in proof/ directory for governance features
 
 ### LanceDB Vector Storage
 
@@ -82,11 +82,11 @@
 | ML-05 | Phase 2: ML into rlhf-feedback-loop | Complete |
 | ML-06 | Phase 2: ML into rlhf-feedback-loop | Complete |
 | GOV-01 | Phase 3: Governance into Subway | Complete |
-| GOV-02 | Phase 3: Governance into Subway | Pending |
+| GOV-02 | Phase 3: Governance into Subway | Complete |
 | GOV-03 | Phase 3: Governance into Subway | Complete |
 | GOV-04 | Phase 3: Governance into Subway | Complete |
 | GOV-05 | Phase 3: Governance into Subway | Complete |
-| GOV-06 | Phase 3: Governance into Subway | Pending |
+| GOV-06 | Phase 3: Governance into Subway | Complete |
 | VEC-01 | Phase 4: LanceDB Vector Storage | Pending |
 | VEC-02 | Phase 4: LanceDB Vector Storage | Pending |
 | VEC-03 | Phase 4: LanceDB Vector Storage | Pending |
