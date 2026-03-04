@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-03-04)
 
 ## Current Position
 
-Phase: 4 of 5 — COMPLETE (LanceDB Vector Storage)
-Plan: Phase 4 all 4 plans complete
-Status: Phase 4 complete — 4-01, 4-02, 4-03, 4-04 done; VEC-01..VEC-05 all marked complete
-Last activity: 2026-03-04 — Plan 4-04 complete: prove-lancedb.js generated lancedb-report.md; all 5 VEC requirements pass; 93 node-runner tests green; Phase 4 complete
+Phase: 5 of 5 — IN PROGRESS (RLAIF and DPO Optimization)
+Plan: Phase 5 plan 5-01 complete; 5-02 (meta-policy) previously committed; 5-01 now complete
+Status: Phase 5 in progress — 5-01 complete (DPO-01, DPO-02); 5-02 complete (DPO-03); DPO-04 (prove:rlaif) pending
+Last activity: 2026-03-04 — Plan 5-01 complete: rlaif-self-audit.js + dpo-optimizer.js; saveModel() fix in thompson-sampling.js; 142 node-runner tests green
 
 Progress: [████████░░] 80%
 
@@ -51,6 +51,7 @@ Progress: [████████░░] 80%
 | Phase 04-lancedb-vector-storage P4-03 | 1m 23s | 2 tasks | 3 files |
 | Phase 04-lancedb-vector-storage P4-04 | 112s | 2 tasks | 4 files |
 | Phase 05-rlaif-and-dpo-optimization P5-02 | 2min | 1 tasks | 3 files |
+| Phase 05-rlaif-and-dpo-optimization P5-01 | 278s | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,8 @@ Progress: [████████░░] 80%
 - [Phase 04-lancedb-vector-storage]: prove-lancedb.js uses RLHF_VECTOR_STUB_EMBED=true for offline smoke test; VEC-05 self-referential via execSync node:test
 - [Phase 05-rlaif-and-dpo-optimization]: inferDomain exported from feedback-loop.js — was implemented but missing from module.exports; needed for meta-policy.js import
 - [Phase 05-rlaif-and-dpo-optimization]: meta-policy.js run() is synchronous — CLI uses try/catch not async .catch(); timeDecayWeight imported from thompson-sampling.js (not feedback-schema.js)
+- [Phase 05-rlaif-and-dpo-optimization]: saveModel() added to thompson-sampling.js — was absent; required by dpo-optimizer for Thompson posterior persistence
+- [Phase 05-rlaif-and-dpo-optimization]: test:rlaif wired into test aggregate; 24 new tests bring total from 93 to 142 (+49 from Phase 4 baseline)
 
 ### Pending Todos
 
@@ -102,5 +105,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-04
-Stopped at: Completed 04-lancedb-vector-storage/4-04-PLAN.md — prove-lancedb.js generated lancedb-report.md; all 5 VEC requirements pass; 93 tests green; Phase 4 complete
+Stopped at: Completed 05-rlaif-and-dpo-optimization/5-01-PLAN.md — rlaif-self-audit.js + dpo-optimizer.js created; selfAuditAndLog wired as 4th non-blocking side-effect; saveModel() added to thompson-sampling.js; 142 tests green; DPO-01 and DPO-02 complete
 Resume file: None
