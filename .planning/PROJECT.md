@@ -18,19 +18,30 @@ Every synced feature must have tests, pass CI, and produce verification evidence
 - ✓ JSONL feedback storage — existing in both repos
 - ✓ CI pipeline with test gates — existing in both repos
 
-### Active
+### Active — v2.0: Production Readiness
 
-- [ ] Bring Thompson Sampling posteriors into rlhf-feedback-loop
-- [ ] Bring LanceDB vector storage into rlhf-feedback-loop
-- [ ] Bring LSTM/Transformer sequence features into rlhf-feedback-loop
-- [ ] Bring diversity tracking into rlhf-feedback-loop
-- [ ] Bring RLAIF self-scoring into rlhf-feedback-loop
-- [ ] Bring budget guard into Subway_RN_Demo
-- [ ] Bring intent router + policy bundles into Subway_RN_Demo
-- [ ] Bring ContextFS with semantic cache into Subway_RN_Demo
-- [ ] Bring self-healing monitor + auto-fix workflows into Subway_RN_Demo
-- [ ] Update tests in both repos for all new features
-- [ ] Generate verification evidence for every sync
+**Goal:** Close all CRITICAL and IMPORTANT gaps between rlhf-feedback-loop and Subway_RN_Demo so both systems are production-ready.
+
+#### CRITICAL (Subway → rlhf)
+- [ ] Feedback attribution — trace feedback back to specific agent actions
+- [ ] Hybrid feedback context — pre-tool guard using attributed feedback
+
+#### IMPORTANT (Subway → rlhf)
+- [ ] Context engine — pre-computed knowledge bundle routing
+- [ ] Skill quality tracker — correlate tool call metrics to feedback
+- [ ] Validate-feedback — schema + semantic + anomaly quality auditor
+- [ ] Feedback-to-rules — feedback → CLAUDE.md behavior rules distillation
+- [ ] Plan gate — PRD markdown schema validation gate
+- [ ] Feedback inbox reader — cursor-based inbox for reflexion-preflight
+- [ ] Feedback-to-memory bridge — stdin JSON → MCP memory format
+- [ ] Rich context + inferOutcome enrichment in capture
+- [ ] PyTorch/CSV/action-analysis training export formats
+
+#### IMPORTANT (rlhf → Subway)
+- [ ] LanceDB vector store with HuggingFace embeddings
+- [ ] DPO optimizer (offline batch)
+- [ ] Thompson Sampling JS module
+- [ ] Self-healing GH Action workflows
 
 ### Out of Scope
 
@@ -65,5 +76,16 @@ Every synced feature must have tests, pass CI, and produce verification evidence
 | Test everything, verify everything | CEO mandate: no unproven claims | — Pending |
 | No tech debt tolerance | Clean code only, no shortcuts | — Pending |
 
+## Current Milestone: v2.0 Production Readiness
+
+**Goal:** Close all CRITICAL and IMPORTANT gaps so both RLHF systems are production-ready.
+
+**Target features:**
+- Feedback attribution + pre-tool guards (CRITICAL)
+- Context engine, skill tracker, data quality validator (IMPORTANT)
+- Feedback-to-rules loop closure (IMPORTANT)
+- LanceDB + DPO optimizer + Thompson JS into Subway (IMPORTANT)
+- Rich context enrichment + multi-format training export (IMPORTANT)
+
 ---
-*Last updated: 2026-03-04 after initialization*
+*Last updated: 2026-03-04 after v2.0 milestone start*
