@@ -5,29 +5,31 @@
 See: .planning/PROJECT.md (updated 2026-03-04)
 
 **Core value:** Every synced feature has tests, passes CI, and produces verification evidence — no tech debt
-**Current focus:** v2.0 milestone — Phases 7, 8, 11 complete; ready for Phase 9
+**Current focus:** v2.0 milestone COMPLETE — all phases done, 314 tests, 0 failures
 
 ## Current Position
 
-Phase: 9 — Intelligence
-Plan: 09-01 (not started)
-Status: Phases 7 (Data Quality), 8 (Loop Closure), 11 (Subway Upgrades) complete; QUAL-01..04, LOOP-01..05, SUBW-01..05 all satisfied
-Last activity: 2026-03-04 — Phases 7, 8, 11 executed: all proof gates passing; 230 tests, 0 failures; ready for Phase 9
+Phase: 12 — Proof Gate (COMPLETE)
+Plan: 12-01 (complete)
+Status: v2.0 milestone complete — Phases 9, 10, 12 executed; INTL-01..03, XPRT-01..05, PROOF-01..02 all satisfied
+Last activity: 2026-03-04 — Phases 9, 10, 12 executed: all proof gates passing; 314 tests, 0 failures; v2.0 DONE
 
-Progress: [█████░░░░░] ~45% (v2.0)
+Progress: [██████████] 100% (v2.0)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed (v2.0): 1
-- Average duration: 4min
-- Total execution time: ~4min
+- Total plans completed (v2.0): 3 (phases 9, 10, 12)
+- Average duration: ~6min
+- Total execution time: ~18min (phases 9-12)
 
 **By Phase (v2.0):**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| Phase 09-intelligence P09-01 | ~8min | 3 tasks | 6 files |
+| Phase 10-training-export P10-01 | ~5min | 3 tasks | 5 files |
+| Phase 12-proof-gate P12-01 | ~3min | 2 tasks | 3 files |
 
 **Recent Trend:**
 - Last 5 plans: none yet (v2.0)
@@ -123,10 +125,16 @@ Progress: [█████░░░░░] ~45% (v2.0)
 - [Phase 11-subway-upgrades]: Subway vector-store tests require NODE_OPTIONS=--experimental-vm-modules — added to test:governance in Subway package.json
 - [Phase 11-subway-upgrades]: thompson-sampling.js in Subway has inline parseTimestamp — no shared feedback-schema.js in Subway
 - [Phase 11-subway-upgrades]: prove-subway-upgrades.js uses err.stdout + err.stderr pattern for Jest output capture (execSync throws on non-zero exit)
+- [Phase 09-intelligence]: context-engine PROJECT_ROOT = path.join(__dirname, '..') — 1 level from scripts/ to repo root
+- [Phase 09-intelligence]: skill-quality-tracker normalizes both 'up'/'down' (Subway) and 'positive'/'negative' (rlhf) feedback signals; CORRELATION_WINDOW_MS = 60_000
+- [Phase 09-intelligence]: routeQuery falls back to buildKnowledgeIndex() on-the-fly if index file is missing
+- [Phase 10-training-export]: buildPreferencePairs uses tag overlap scoring to match positive+negative pairs; falls back to any unused negative
+- [Phase 10-training-export]: validateMemoryStructure checks _dpoExport flag to conditionally enforce prompt/chosen/rejected fields
+- [Phase 12-proof-gate]: V1_BASELINE_TEST_COUNT = 142; v2 final = 314 (+172); prove-v2-milestone sums all ℹ pass N lines
 
 ### Pending Todos
 
-- Run `gsd:plan-phase 6` to decompose Phase 6 into executable plans
+None — v2.0 milestone complete
 
 ### Blockers/Concerns
 
@@ -136,6 +144,6 @@ Progress: [█████░░░░░] ~45% (v2.0)
 ## Session Continuity
 
 Last session: 2026-03-04
-Stopped at: Completed Phases 7, 8, 11 — all QUAL, LOOP, SUBW requirements passing; 230 tests, 0 failures; ready for Phase 9
+Stopped at: Completed Phases 9, 10, 12 — v2.0 milestone DONE; INTL-01..03, XPRT-01..05, PROOF-01..02 all satisfied; 314 tests, 0 failures
 Resume file: None
-Next action: `/gsd:plan-phase 9`
+Next action: v2.0 complete — consider v3 planning (ADV-01..05 requirements)

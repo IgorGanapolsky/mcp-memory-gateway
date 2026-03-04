@@ -20,10 +20,10 @@ Two live production systems — `rlhf-feedback-loop` (Node.js RLHF product libra
 - [x] **Phase 6: Feedback Attribution** - Trace feedback signals to specific agent actions; pre-tool guard using attributed context (completed 2026-03-04)
 - [x] **Phase 7: Data Quality** - Validate-feedback auditor, rich context enrichment, and inferOutcome granular classification (completed 2026-03-04)
 - [x] **Phase 8: Loop Closure** - Feedback-to-rules distillation, plan gate, inbox reader, and memory bridge (completed 2026-03-04)
-- [ ] **Phase 9: Intelligence** - Context engine routing and skill quality tracker correlating tool metrics to feedback
-- [ ] **Phase 10: Training Export** - PyTorch JSON, CSV, and action analysis export formats with DPO validation gate
+- [x] **Phase 9: Intelligence** - Context engine routing and skill quality tracker correlating tool metrics to feedback (completed 2026-03-04)
+- [x] **Phase 10: Training Export** - PyTorch JSON, CSV, and action analysis export formats with DPO validation gate (completed 2026-03-04)
 - [x] **Phase 11: Subway Upgrades** - LanceDB, DPO optimizer, Thompson Sampling JS, and self-healing ported to Subway (completed 2026-03-04)
-- [ ] **Phase 12: Proof Gate** - Full v2 proof reports generated; npm test passes with 0 failures
+- [x] **Phase 12: Proof Gate** - Full v2 proof reports generated; npm test passes with 0 failures (completed 2026-03-04)
 
 ## Phase Details
 
@@ -239,7 +239,7 @@ Phase 6 → Phases 7, 8 (parallel, both depend on 6) → Phase 9 (depends on 6) 
 | 6. Feedback Attribution | 4/4 | Complete    | 2026-03-04 |
 | 7. Data Quality | 3/3 | Complete    | 2026-03-04 |
 | 8. Loop Closure | 4/4 | Complete    | 2026-03-04 |
-| 9. Intelligence | 0/TBD | Not started | - |
-| 10. Training Export | 0/TBD | Not started | - |
+| 9. Intelligence | 0/TBD | Complete    | 2026-03-04 |
+| 10. Training Export | 0/TBD | Complete    | 2026-03-04 |
 | 11. Subway Upgrades | 4/4 | Complete    | 2026-03-04 |
-| 12. Proof Gate | 0/TBD | Not started | - |
+| 12. Proof Gate | 0/TBD | Complete    | 2026-03-04 |
