@@ -38,6 +38,7 @@ Progress: [██░░░░░░░░] 20%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-contract-alignment P03 | 15min | 2 tasks | 3 files |
+| 01-contract-alignment P02 | 20min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -49,6 +50,7 @@ Progress: [██░░░░░░░░] 20%
 - [Init]: $10/month budget cap enforced by budget-guard.js on all API calls
 - [Phase 01-contract-alignment]: parseTimestamp() uses new Date(String(ts).trim()) returning null for invalid input — CNTR-03 rlhf side complete
 - [Phase 01-contract-alignment]: Baseline node-runner count is 60 (58 test:api + 2 test:proof) — authoritative Phase 2 and Phase 3 start gate in proof/baseline-test-count.md
+- [Phase 01-contract-alignment P02]: Subway feedback-schema.js is gitignored via .git/info/exclude (local-only) — verified in place with 44 inline tests passing; CNTR-02 complete
 
 ### Pending Todos
 
@@ -62,5 +64,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-04
-Stopped at: Completed 01-contract-alignment/1-01-PLAN.md — 1-01-SUMMARY.md created (retroactive close-out; code was committed in prior run)
+Stopped at: Completed 01-contract-alignment/1-02-PLAN.md — 1-02-SUMMARY.md created; CNTR-02 and CNTR-03 Subway half verified complete
 Resume file: None
