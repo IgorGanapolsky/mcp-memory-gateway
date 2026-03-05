@@ -3,6 +3,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 
+const { traceForSelfHealFix, aggregateTraces } = require('./code-reasoning');
+
 const PROJECT_ROOT = path.join(__dirname, '..');
 const PACKAGE_JSON_PATH = path.join(PROJECT_ROOT, 'package.json');
 const KNOWN_FIX_SCRIPTS = ['lint:fix', 'format', 'fix', 'feedback:rules'];
@@ -78,6 +80,12 @@ function runSelfHeal({ reason = 'unknown', cwd = PROJECT_ROOT } = {}) {
   const afterChanges = listChangedFiles({ cwd });
   const changedFiles = afterChanges.filter((filePath) => !beforeSet.has(filePath));
 
+  const traces = execution.results.map((fixResult) => {
+    const filesForScript = changedFiles.filter(() => true);
+    return traceForSelfHealFix(fixResult, fixResult.status === 'success' ? filesForScript : []);
+  });
+  const reasoning = aggregateTraces(traces);
+
   return {
     timestamp: new Date().toISOString(),
     reason,
@@ -87,6 +95,8 @@ function runSelfHeal({ reason = 'unknown', cwd = PROJECT_ROOT } = {}) {
     changedFiles,
     changed: changedFiles.length > 0,
     healthy: execution.failed === 0,
+    reasoning,
+    traces,
   };
 }
 
