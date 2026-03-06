@@ -197,6 +197,30 @@ function createApiServer() {
       return;
     }
 
+    if (req.method === 'GET' && pathname === '/.well-known/mcp/server-card.json') {
+      sendJson(res, 200, {
+        name: 'rlhf-feedback-loop',
+        description: 'RLHF feedback loop for AI agents. Capture feedback, block mistakes, export DPO data.',
+        version: pkg.version,
+        tools: [
+          { name: 'recall', description: 'Recall relevant past feedback for current task' },
+          { name: 'capture_feedback', description: 'Capture thumbs up/down feedback' },
+          { name: 'feedback_stats', description: 'Feedback analytics' },
+          { name: 'feedback_summary', description: 'Human-readable feedback summary' },
+          { name: 'prevention_rules', description: 'Generate prevention rules from failures' },
+          { name: 'export_dpo_pairs', description: 'Export DPO training pairs' },
+          { name: 'construct_context_pack', description: 'Build bounded context pack' },
+          { name: 'evaluate_context_pack', description: 'Record context pack outcome' },
+          { name: 'context_provenance', description: 'Audit trail of context decisions' },
+          { name: 'list_intents', description: 'Available action plans' },
+          { name: 'plan_intent', description: 'Generate execution plan' },
+        ],
+        repository: 'https://github.com/IgorGanapolsky/rlhf-feedback-loop',
+        homepage: 'https://rlhf-feedback-loop-710216278770.us-central1.run.app',
+      });
+      return;
+    }
+
     if (req.method === 'GET' && pathname === '/health') {
       sendJson(res, 200, {
         status: 'ok',
