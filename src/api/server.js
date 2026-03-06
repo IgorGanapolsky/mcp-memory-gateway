@@ -183,7 +183,18 @@ function createApiServer() {
     const parsed = new URL(req.url, 'http://localhost');
     const pathname = parsed.pathname;
 
-    // Health check is unauthenticated — required for Railway/load-balancer probes
+    // Public endpoints — no auth required
+    if (req.method === 'GET' && pathname === '/') {
+      sendJson(res, 200, {
+        name: 'rlhf-feedback-loop',
+        version: pkg.version,
+        status: 'ok',
+        docs: 'https://github.com/IgorGanapolsky/rlhf-feedback-loop',
+        endpoints: ['/health', '/v1/feedback/capture', '/v1/feedback/stats', '/v1/dpo/export'],
+      });
+      return;
+    }
+
     if (req.method === 'GET' && pathname === '/health') {
       sendJson(res, 200, {
         status: 'ok',
@@ -409,10 +420,6 @@ function createApiServer() {
         return;
       }
 
-      if (req.method === 'GET' && pathname === '/') {
-        sendText(res, 200, 'RLHF Feedback Loop API is running.');
-        return;
-      }
 
       // ----------------------------------------------------------------
       // Billing routes
