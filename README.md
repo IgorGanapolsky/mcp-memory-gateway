@@ -16,28 +16,16 @@
 
 ## Get Started
 
-One command. Works with any MCP-compatible agent:
+One command. Pick your platform:
 
-```bash
-claude mcp add rlhf -- npx -y rlhf-feedback-loop serve
-```
-
-```bash
-codex mcp add rlhf -- npx -y rlhf-feedback-loop serve
-```
-
-```bash
-gemini mcp add rlhf -- npx -y rlhf-feedback-loop serve
-```
+| Platform | Install |
+|----------|---------|
+| **Claude** | `claude mcp add rlhf -- npx -y rlhf-feedback-loop serve` |
+| **Codex** | `codex mcp add rlhf -- npx -y rlhf-feedback-loop serve` |
+| **Gemini** | `gemini mcp add rlhf -- npx -y rlhf-feedback-loop serve` |
+| **All at once** | `npx add-mcp rlhf-feedback-loop` |
 
 That's it. Your agent can now capture feedback, recall past learnings mid-conversation, and block repeated mistakes.
-
-Or install via npm for CLI and programmatic use:
-
-```bash
-npm install rlhf-feedback-loop
-npx rlhf-feedback-loop init
-```
 
 ## How It Works
 
