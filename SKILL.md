@@ -1,17 +1,17 @@
 ---
 name: rlhf-feedback-loop
-description: An autonomous agentic control plane that captures human feedback (up/down), generates prevention rules to stop repeated mistakes, and exports DPO-ready training data.
+description: The Agentic Feedback Studio & Veto Layer. Capture human preference (up/down), engineer high-density context packs, and convert vibes into verifiable Agentic Guardrails (V2V).
 ---
 
-# RLHF Feedback Loop Skill
+# Agentic Feedback Studio Skill
 
-This skill provides a production-grade control plane for agentic workflows. It allows the agent to learn from user feedback in real-time and enforce architectural guardrails.
+This skill provides a production-grade **Agentic Control Plane** for AI workflows. It allows the agent to learn from user vibes in real-time and enforce verifiable guardrails.
 
 ## Capabilities
-- **Capture Feedback**: Records thumbs up/down signals with rich context and rubric-based scoring.
-- **Mistake Prevention**: Automatically generates and enforces `CLAUDE.md` / `AGENTS.md` rules derived from recurring failures.
-- **Context Engineering**: Packages high-density proprietary knowledge into "Context Packs" for improved agent performance.
-- **DPO Pipeline**: Exports preference pairs (Chosen vs. Rejected) for model fine-tuning.
+- **Vibe-to-Verification (V2V)**: Records up/down signals and converts them into repository-level architectural constraints (The Veto Layer).
+- **Agentic Guardrails**: Automatically generates and enforces `CLAUDE.md` / `AGENTS.md` rules derived from recurring failure modes.
+- **Context Engineering**: Packages high-density proprietary knowledge into "Context Packs" for improved agent reliability.
+- **RLHF Dataset Engineering**: Exports preference pairs (Chosen vs. Rejected) for model fine-tuning.
 
 ## Activation
 The model should activate this skill whenever:
