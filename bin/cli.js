@@ -285,10 +285,16 @@ function prove() {
   }
 }
 
+function serve() {
+  // Start MCP server over stdio — used by `claude mcp add`, `codex mcp add`, `gemini mcp add`
+  const mcpServer = path.join(PKG_ROOT, 'adapters', 'mcp', 'server-stdio.js');
+  require(mcpServer);
+}
+
 function startApi() {
-  const serverPath = path.join(PKG_ROOT, 'scripts', 'feedback-loop.js');
+  const serverPath = path.join(PKG_ROOT, 'src', 'api', 'server.js');
   try {
-    execSync(`node "${serverPath}" --serve`, { stdio: 'inherit', cwd: CWD });
+    execSync(`node "${serverPath}"`, { stdio: 'inherit', cwd: CWD });
   } catch (err) {
     process.exit(err.status || 1);
   }
@@ -300,6 +306,7 @@ function help() {
   console.log('');
   console.log('Commands:');
   console.log('  init                  Scaffold .rlhf/ config + MCP server in current project');
+  console.log('  serve                 Start MCP server (stdio) — for claude/codex/gemini mcp add');
   console.log('  capture [flags]       Capture feedback (--feedback=up|down --context="..." --tags="...")');
   console.log('  stats                 Show feedback analytics');
   console.log('  summary               Human-readable feedback summary');
@@ -316,11 +323,20 @@ function help() {
   console.log('  npx rlhf-feedback-loop capture --feedback=down --context="broke prod" --what-went-wrong="no tests"');
   console.log('  npx rlhf-feedback-loop export-dpo');
   console.log('  npx rlhf-feedback-loop stats');
+  console.log('');
+  console.log('MCP install (one command per platform):');
+  console.log('  claude mcp add rlhf -- npx -y rlhf-feedback-loop serve');
+  console.log('  codex mcp add rlhf -- npx -y rlhf-feedback-loop serve');
+  console.log('  gemini mcp add rlhf -- npx -y rlhf-feedback-loop serve');
 }
 
 switch (COMMAND) {
   case 'init':
     init();
+    break;
+  case 'serve':
+  case 'mcp':
+    serve();
     break;
   case 'capture':
   case 'feedback':

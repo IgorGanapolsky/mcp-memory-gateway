@@ -31,6 +31,9 @@ const {
   getAllowedTools,
   assertToolAllowed,
 } = require('../../scripts/mcp-policy');
+const {
+  searchSimilar,
+} = require('../../scripts/vector-store');
 
 const SERVER_INFO = {
   name: 'rlhf-feedback-loop-mcp',
@@ -212,6 +215,18 @@ const TOOLS = [
       },
     },
   },
+  {
+    name: 'recall',
+    description: 'Recall relevant past feedback, memories, and prevention rules for the current task. Call this at the start of any task to inject past learnings into the conversation.',
+    inputSchema: {
+      type: 'object',
+      required: ['query'],
+      properties: {
+        query: { type: 'string', description: 'Describe the current task or context to find relevant past feedback' },
+        limit: { type: 'number', description: 'Max memories to return (default 5)' },
+      },
+    },
+  },
 ];
 
 function toText(result) {
@@ -237,6 +252,56 @@ function parseOptionalObject(input, name) {
 async function callTool(name, args = {}) {
   assertToolAllowed(name, getActiveMcpProfile());
 
+  if (name === 'recall') {
+    const query = args.query || '';
+    const limit = Number(args.limit || 5);
+    const parts = [];
+
+    // 1. Vector search for similar past feedback
+    try {
+      const similar = await searchSimilar(query, limit);
+      if (similar.length > 0) {
+        parts.push('## Relevant Past Feedback\n');
+        for (const mem of similar) {
+          const signal = mem.signal === 'positive' ? 'GOOD' : 'BAD';
+          parts.push(`**[${signal}]** ${mem.context}`);
+          if (mem.tags) parts.push(`  Tags: ${mem.tags}`);
+          parts.push('');
+        }
+      }
+    } catch (_) {
+      // Vector store may not be initialized yet — fall back to JSONL
+    }
+
+    // 2. Load prevention rules
+    try {
+      const rulesPath = path.join(SAFE_DATA_DIR, 'prevention-rules.md');
+      if (fs.existsSync(rulesPath)) {
+        const rules = fs.readFileSync(rulesPath, 'utf8').trim();
+        if (rules.length > 50) {
+          parts.push('## Active Prevention Rules\n');
+          parts.push(rules);
+          parts.push('');
+        }
+      }
+    } catch (_) {}
+
+    // 3. Recent feedback summary
+    try {
+      const summary = feedbackSummary(10);
+      if (summary) {
+        parts.push('## Recent Feedback Summary\n');
+        parts.push(summary);
+      }
+    } catch (_) {}
+
+    const text = parts.length > 0
+      ? parts.join('\n')
+      : 'No past feedback found. This appears to be a fresh start.';
+
+    return { content: [{ type: 'text', text }] };
+  }
+
   if (name === 'capture_feedback') {
     const result = captureFeedback({
       signal: args.signal,
@@ -249,7 +314,22 @@ async function callTool(name, args = {}) {
       tags: args.tags || [],
       skill: args.skill,
     });
-    return { content: [{ type: 'text', text: toText(result) }] };
+
+    // Auto-recall: after capturing, return relevant context so the agent
+    // can immediately adjust behavior based on past learnings
+    let recallText = '';
+    try {
+      const similar = await searchSimilar(args.context || '', 3);
+      if (similar.length > 0) {
+        recallText = '\n\n---\n## Related Past Feedback (auto-recall)\n';
+        for (const mem of similar) {
+          const signal = mem.signal === 'positive' ? 'GOOD' : 'BAD';
+          recallText += `- **[${signal}]** ${mem.context}\n`;
+        }
+      }
+    } catch (_) {}
+
+    return { content: [{ type: 'text', text: toText(result) + recallText }] };
   }
 
   if (name === 'feedback_summary') {

@@ -2,6 +2,7 @@
   "version": 1,
   "profiles": {
     "default": [
+      "recall",
       "capture_feedback",
       "feedback_summary",
       "feedback_stats",
@@ -14,6 +15,7 @@
       "context_provenance"
     ],
     "readonly": [
+      "recall",
       "feedback_summary",
       "feedback_stats",
       "list_intents",
