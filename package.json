@@ -117,7 +117,7 @@
   "dependencies": {
     "@huggingface/transformers": "^3.8.1",
     "@lancedb/lancedb": "^0.26.2",
-    "apache-arrow": "^18.1.0",
+    "apache-arrow": "^21.1.0",
     "stripe": "^20.4.1"
   },
   "mcpName": "io.github.IgorGanapolsky/rlhf-feedback-loop"
