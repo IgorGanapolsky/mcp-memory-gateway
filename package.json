@@ -43,7 +43,7 @@
     "test:deployment": "node --test tests/deployment.test.js",
     "test:workflow": "node --test tests/workflow-contract.test.js",
     "test:billing": "node --test tests/billing.test.js",
-    "test:cli": "node --test tests/cli.test.js",
+    "test:cli": "node --test tests/cli.test.js tests/feedback-normalize.test.js",
     "test:coverage": "node scripts/test-coverage.js",
     "start:api": "node src/api/server.js",
     "start:mcp": "node adapters/mcp/server-stdio.js",
