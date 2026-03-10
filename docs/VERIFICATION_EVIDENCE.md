@@ -101,10 +101,10 @@ Observed result:
 
 - Targeted CLI coverage verification passed: `22` tests passed, `0` failed.
 - Targeted adapter proof verification passed: `38` tests passed, `0` failed.
-- `npm test` passed end-to-end after hardening the spawned stdio startup budget used by the CLI and adapter proof harness.
-- `npm run test:coverage` passed with `720` tests passed, `0` failed, `1` skipped and overall coverage at `83.17%` lines, `69.34%` branches, and `86.86%` functions.
+- `npm test` passed end-to-end on the merged branch state after hardening the spawned stdio startup budget used by the CLI and adapter proof harness.
+- `npm run test:coverage` passed with `720` tests passed, `0` failed, `1` skipped and overall coverage at `83.03%` lines, `69.35%` branches, and `86.54%` functions.
 - `npm run prove:adapters`: `24 passed`, `0 failed`.
-- `env RLHF_PROOF_DIR="$(mktemp -d)" npm run prove:automation`: `14 passed`, `0 failed`.
+- `npm run prove:automation`: `14 passed`, `0 failed`.
 - `npm run self-heal:check`: `HEALTHY` with `4/4` checks healthy.
 
 Artifacts updated:
