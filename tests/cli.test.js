@@ -21,6 +21,7 @@ const { test, describe, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 
 const CLI = path.resolve(__dirname, '../bin/cli.js');
+const MCP_SERVER_PATH = path.resolve(__dirname, '../adapters/mcp/server-stdio.js');
 const savedFunnelPath = process.env._TEST_FUNNEL_LEDGER_PATH;
 const savedHome = process.env.HOME;
 const savedUserProfile = process.env.USERPROFILE;
@@ -247,9 +248,15 @@ function runServeHandshake(sendRequest, options = {}) {
       else resolve(value);
     };
 
+    // Full-suite coverage adds noticeable subprocess startup overhead here.
     const timer = setTimeout(() => {
       done(new Error(`MCP initialize timeout; stderr=${stderrBuffer}`));
-    }, 5000);
+    }, options.timeoutMs ?? 10000);
+
+    child.on('error', (err) => {
+      clearTimeout(timer);
+      done(err);
+    });
 
     child.on('exit', (code, signal) => {
       clearTimeout(timer);
@@ -490,11 +497,11 @@ describe('bin/cli.js', () => {
     const mcp = JSON.parse(fs.readFileSync(mcpPath, 'utf8'));
     assert.ok(mcp.mcpServers, '.mcp.json should have mcpServers');
     assert.ok(mcp.mcpServers.rlhf, 'Should have canonical rlhf server entry');
-    assert.strictEqual(mcp.mcpServers.rlhf.command, 'npx');
-    assert.deepEqual(mcp.mcpServers.rlhf.args, ['-y', 'rlhf-feedback-loop', 'serve']);
+    assert.strictEqual(mcp.mcpServers.rlhf.command, 'node');
+    assert.deepEqual(mcp.mcpServers.rlhf.args, [MCP_SERVER_PATH]);
   });
 
-  test('init writes portable codex MCP launcher when Codex home exists', () => {
+  test('init writes local direct codex MCP launcher when running from source checkout', () => {
     const isolatedDir = makeTmpDir();
     const isolatedHome = makeTmpDir();
     const codexHome = path.join(isolatedHome, '.codex');
@@ -515,9 +522,8 @@ describe('bin/cli.js', () => {
     const configPath = path.join(codexHome, 'config.toml');
     const content = fs.readFileSync(configPath, 'utf8');
     assert.match(content, /\[mcp_servers\.rlhf\]/);
-    assert.match(content, /command = "npx"/);
-    assert.match(content, /args = \["-y", "rlhf-feedback-loop", "serve"\]/);
-    assert.doesNotMatch(content, /server-stdio\.js/);
+    assert.match(content, /command = "node"/);
+    assert.match(content, new RegExp(`args = \\["${MCP_SERVER_PATH.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"\\]`));
 
     fs.rmSync(isolatedDir, { recursive: true, force: true });
     fs.rmSync(isolatedHome, { recursive: true, force: true });

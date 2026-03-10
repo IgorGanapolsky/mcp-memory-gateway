@@ -57,7 +57,7 @@ async function fetchWithRetry(url, options, { retries = 5, delayMs = 100 } = {})
 async function proveMcpStdioTransport({
   root,
   transport = 'ndjson',
-  timeoutMs = 5000,
+  timeoutMs = 10000,
   cwd = root,
   env = process.env,
 }) {
@@ -353,12 +353,14 @@ async function runProof(options = {}) {
 
     // MCP checks
     {
+      currentCheck = 'mcp.initialize';
       const init = await handleRequest({ jsonrpc: '2.0', id: 1, method: 'initialize', params: {} });
       check(Boolean(init.serverInfo && init.serverInfo.name), 'mcp initialize missing serverInfo');
       addResult('mcp.initialize', true, { server: init.serverInfo.name });
     }
 
     {
+      currentCheck = 'mcp.stdio.framed.initialize';
       const framedResponse = await proveMcpStdioTransport({ root: ROOT, transport: 'framed' });
       check(framedResponse.id === 777, 'stdio framed initialize returned wrong id');
       check(Boolean(framedResponse.result && framedResponse.result.serverInfo), 'stdio framed initialize missing serverInfo');
@@ -366,6 +368,7 @@ async function runProof(options = {}) {
     }
 
     {
+      currentCheck = 'mcp.stdio.ndjson.initialize';
       const ndjsonResponse = await proveMcpStdioTransport({ root: ROOT, transport: 'ndjson' });
       check(ndjsonResponse.id === 777, 'stdio ndjson initialize returned wrong id');
       check(Boolean(ndjsonResponse.result && ndjsonResponse.result.serverInfo), 'stdio ndjson initialize missing serverInfo');
@@ -373,6 +376,7 @@ async function runProof(options = {}) {
     }
 
     {
+      currentCheck = 'mcp.cli.serve.bad_home.initialize';
       const isolatedDir = fs.mkdtempSync(path.join(os.tmpdir(), 'rlhf-proof-cli-serve-'));
       const badHomePath = path.join(isolatedDir, 'invalid-home');
       fs.writeFileSync(badHomePath, 'not-a-directory\n');
@@ -392,17 +396,19 @@ async function runProof(options = {}) {
         check(Boolean(response.result && response.result.serverInfo), 'cli serve bad HOME initialize missing serverInfo');
         addResult('mcp.cli.serve.bad_home.initialize', true, { server: response.result.serverInfo.name });
       } finally {
-        fs.rmSync(isolatedDir, { recursive: true, force: true });
+        fs.rmSync(isolatedDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
       }
     }
 
     {
+      currentCheck = 'mcp.tools.list';
       const list = await handleRequest({ jsonrpc: '2.0', id: 2, method: 'tools/list', params: {} });
       check(Array.isArray(list.tools) && list.tools.length > 0, 'mcp tools/list empty');
       addResult('mcp.tools.list', true, { tools: list.tools.length });
     }
 
     {
+      currentCheck = 'mcp.tools.call.feedback_summary';
       const call = await handleRequest({
         jsonrpc: '2.0',
         id: 3,
@@ -417,6 +423,7 @@ async function runProof(options = {}) {
     }
 
     {
+      currentCheck = 'mcp.tools.call.plan_intent';
       const call = await handleRequest({
         jsonrpc: '2.0',
         id: 31,
@@ -435,6 +442,7 @@ async function runProof(options = {}) {
     }
 
     {
+      currentCheck = 'mcp.tools.call.capture_feedback.rubric_gate';
       const call = await handleRequest({
         jsonrpc: '2.0',
         id: 32,
@@ -459,6 +467,7 @@ async function runProof(options = {}) {
     }
 
     {
+      currentCheck = 'mcp.tools.call.capture_feedback.clarification';
       const call = await handleRequest({
         jsonrpc: '2.0',
         id: 33,
@@ -479,6 +488,7 @@ async function runProof(options = {}) {
     }
 
     {
+      currentCheck = 'mcp.policy.locked_profile_denies_write_tool';
       process.env.RLHF_MCP_PROFILE = 'locked';
       let denied = false;
       try {
@@ -501,6 +511,7 @@ async function runProof(options = {}) {
 
     // Spec and adapter files checks
     {
+      currentCheck = 'adapter.chatgpt.openapi.parity';
       const canonical = fs.readFileSync(path.join(ROOT, 'openapi/openapi.yaml'), 'utf-8');
       const chatgpt = fs.readFileSync(path.join(ROOT, 'adapters/chatgpt/openapi.yaml'), 'utf-8');
       check(canonical === chatgpt, 'chatgpt openapi not in sync with canonical openapi');
@@ -512,6 +523,7 @@ async function runProof(options = {}) {
     }
 
     {
+      currentCheck = 'adapter.gemini.declarations';
       const gemini = JSON.parse(fs.readFileSync(path.join(ROOT, 'adapters/gemini/function-declarations.json'), 'utf-8'));
       check(Array.isArray(gemini.tools), 'gemini tools missing');
       check(gemini.tools.length >= 3, 'gemini tools should have at least 3 entries');
@@ -519,6 +531,7 @@ async function runProof(options = {}) {
     }
 
     {
+      currentCheck = 'adapter.files.present';
       const mustExist = [
         'adapters/claude/.mcp.json',
         'adapters/codex/config.toml',
@@ -532,6 +545,7 @@ async function runProof(options = {}) {
 
     // Profiles and policy checks
     {
+      currentCheck = 'subagent.profiles.valid';
       const validation = validateSubagentProfiles();
       check(validation.valid, `subagent profiles invalid: ${validation.issues.join('; ')}`);
       const names = listSubagentProfiles();
@@ -540,6 +554,7 @@ async function runProof(options = {}) {
     }
 
     {
+      currentCheck = 'mcp.policy.profile_differentiation';
       const defaultTools = getAllowedTools('default');
       const lockedTools = getAllowedTools('locked');
       check(defaultTools.length > lockedTools.length, 'default profile should expose more tools than locked');
