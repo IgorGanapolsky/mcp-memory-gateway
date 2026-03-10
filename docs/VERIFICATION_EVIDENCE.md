@@ -19,21 +19,25 @@ Observed result:
 - `npm ci` completed successfully with `0 vulnerabilities`.
 - Targeted landing-page verification passed: `25` tests passed, `0` failed across `tests/api-server.test.js` and `tests/version-metadata.test.js`.
 - `npm test` passed end-to-end after the public messaging and GTM doc changes.
-- `npm run test:coverage` passed after restoring hermetic ADK consolidation behavior on this branch:
+- `npm run test:coverage` passed with a serialized Node test runner (`--test-concurrency=1`) so suites that rewrite `process.env` do not race each other during coverage.
+- The ADK consolidation path stayed hermetic under test:
   - first-run anchor-only consolidation no longer exits early
-  - `ADK_FAKE_CONSOLIDATION=true` now produces deterministic synthesized rules
-  - the anchor-memory test now opts into deterministic consolidation instead of a live Gemini path
-- Coverage summary: `83.40%` lines, `69.26%` branches, `87.25%` functions.
+  - `ADK_FAKE_CONSOLIDATION=true` is honored only under `NODE_ENV=test`
+  - the anchor-memory test opts into deterministic consolidation instead of a live Gemini path
+- Coverage summary: `83.23%` lines, `69.24%` branches, `87.00%` functions.
 - `npm run prove:adapters`: `24 passed`, `0 failed`.
 - `npm run prove:automation`: `14 passed`, `0 failed`.
 - `npm run self-heal:check`: `HEALTHY` with `4/4` checks healthy.
 
 Evidence artifacts:
 
+- Targeted landing/API verification was exercised directly by the commands above.
 - `proof/compatibility/report.json`
 - `proof/compatibility/report.md`
 - `proof/automation/report.json`
 - `proof/automation/report.md`
+
+The command output above is the primary evidence for this run. The tracked proof artifacts listed here were refreshed locally by the proof commands and serve as machine-readable corroboration.
 
 Requirements verified:
 

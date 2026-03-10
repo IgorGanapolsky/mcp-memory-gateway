@@ -47,12 +47,13 @@ test('root serves the landing page by default', async () => {
   assert.match(String(res.headers.get('content-type')), /text\/html/);
 
   const body = await res.text();
-  assert.match(body, /Roll out one revenue or ops workflow with proof, not hope\./);
-  assert.match(body, /North Star: one workflow live and auditable/);
+  assert.match(body, /Cloud Pro/);
+  assert.match(body, /North Star/);
+  assert.match(body, /<section id='faq'>/);
+  assert.match(body, /Answer the buyer questions before they stall the deal\./);
   assert.match(body, /GO_TO_MARKET_REVENUE_WEDGE_2026-03\.md/);
   assert.match(body, /proof\/compatibility\/report\.json/);
   assert.match(body, /proof\/automation\/report\.json/);
-  assert.match(body, /Cloud Pro/);
   assert.match(body, /\/v1\/billing\/checkout/);
 });
 

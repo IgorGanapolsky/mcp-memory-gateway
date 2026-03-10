@@ -79,8 +79,12 @@ function buildFakeConsolidation(anchorLogs, newLogs) {
 }
 
 async function consolidateMemory() {
-  const useFakeConsolidation = process.env.ADK_FAKE_CONSOLIDATION === 'true';
+  const requestedFakeConsolidation = process.env.ADK_FAKE_CONSOLIDATION === 'true';
+  const useFakeConsolidation = requestedFakeConsolidation && process.env.NODE_ENV === 'test';
   const apiKey = process.env.GEMINI_API_KEY;
+  if (requestedFakeConsolidation && !useFakeConsolidation) {
+    console.warn('[ADK Consolidator] Ignoring ADK_FAKE_CONSOLIDATION outside test mode.');
+  }
   if (!useFakeConsolidation && !apiKey) {
     console.warn('[ADK Consolidator] GEMINI_API_KEY is not set. Skipping active consolidation.');
     return;

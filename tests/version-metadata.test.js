@@ -39,10 +39,11 @@ test('landing page keeps GTM and schema assets wired', () => {
 
   assert.match(landingPage, /"@type": "SoftwareApplication"/);
   assert.match(landingPage, /"@type": "FAQPage"/);
+  assert.match(landingPage, /<section id='faq'>/);
   assert.match(landingPage, /__GTM_PLAN_URL__/);
   assert.match(landingPage, /__COMPATIBILITY_REPORT_URL__/);
   assert.match(landingPage, /__AUTOMATION_REPORT_URL__/);
-  assert.match(gtmPlan, /30-Day GTM Plan/);
-  assert.match(gtmPlan, /North Star/);
+  assert.match(gtmPlan, /Weekly active proof-backed workflow runs\./);
+  assert.match(gtmPlan, /Workflow Install Workshop/);
   assert.match(gtmPlan, /lead-to-meeting/i);
 });
