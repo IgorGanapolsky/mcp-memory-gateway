@@ -73,7 +73,7 @@ function upsertCodexServerConfig(content) {
   const canonicalBlock = mcpSectionBlock();
   const sections = LEGACY_MCP_SERVER_NAMES.map((name) => ({
     name,
-    regex: new RegExp(`^\\[mcp_servers\\.${escapeRegExp(name)}\\]\\n[\\s\\S]*?(?=^\\[|\\Z)`, 'm'),
+    regex: new RegExp(`^\\[mcp_servers\\.${escapeRegExp(name)}\\]\\n[\\s\\S]*?(?=^\\[|$)`, 'm'),
   }));
   const matches = sections
     .map((section) => ({ ...section, match: content.match(section.regex) }))
