@@ -734,14 +734,21 @@ function createApiServer() {
     if (req.method === 'POST' && pathname === '/v1/billing/checkout') {
       try {
         const body = await parseJsonBody(req);
+        // $49 Wedge: If oneTime is set, create a one-time payment session
+        const isOneTime = body.oneTime === true || body.amount === 49;
+        
         const result = await createCheckoutSession({
           successUrl: body.successUrl || `${publicOrigin}/success?session_id={CHECKOUT_SESSION_ID}`,
           cancelUrl: body.cancelUrl || `${publicOrigin}/cancel`,
           customerEmail: body.customerEmail,
           installId: body.installId,
-          metadata: body.metadata,
+          metadata: { 
+            ...body.metadata, 
+            oneTime: isOneTime,
+            credits: isOneTime ? 500 : 0 
+          },
         });
-        sendJson(res, 200, result);
+        sendJson(res, 200, { ...result, price: isOneTime ? 49 : 10, type: isOneTime ? 'one-time' : 'subscription' });
       } catch (err) {
         if (err.statusCode) {
           sendJson(res, err.statusCode, { error: err.message });
