@@ -7,7 +7,7 @@
 [![Node](https://img.shields.io/badge/node-%3E%3D18.18.0-brightgreen)](package.json)
 [![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink?logo=github)](https://github.com/sponsors/IgorGanapolsky)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/igorganapolsky)
-[![Pro Pack](https://img.shields.io/badge/Pro%20Pack-Gumroad-FF90E8?logo=gumroad)](https://gumroad.com/igorganapolsky)
+[![Pro Pack](https://img.shields.io/badge/Pro%20Pack-Gumroad-FF90E8?logo=gumroad)](https://iganapolsky.gumroad.com/l/tjovof)
 
 **Local-first memory and feedback pipeline for AI agents.** Captures thumbs-up/down signals, promotes reusable memories, generates prevention rules from repeated failures, and exports KTO/DPO pairs for fine-tuning.
 
@@ -168,7 +168,7 @@ Battle-tested configurations extracted from 500+ agentic sessions. Skip months o
 | **Hook Templates** | Ready-to-install Stop, UserPromptSubmit, PostToolUse hooks |
 | **Reminder Templates** | 8 production reminder templates with priority levels |
 
-**[$9 on Gumroad →](https://gumroad.com/igorganapolsky)**
+**[$9 on Gumroad →](https://iganapolsky.gumroad.com/l/tjovof)**
 
 ## Support the Project
 
