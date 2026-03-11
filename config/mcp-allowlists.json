@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "profiles": {
     "default": [
       "recall",
@@ -13,6 +13,13 @@
       "construct_context_pack",
       "evaluate_context_pack",
       "context_provenance"
+    ],
+    "essential": [
+      "capture_feedback",
+      "recall",
+      "prevention_rules",
+      "feedback_stats",
+      "feedback_summary"
     ],
     "readonly": [
       "recall",
