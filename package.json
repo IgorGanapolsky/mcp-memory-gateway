@@ -61,6 +61,16 @@
   ],
   "author": "Igor Ganapolsky",
   "license": "MIT",
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/IgorGanapolsky"
+    },
+    {
+      "type": "individual",
+      "url": "https://buymeacoffee.com/igorganapolsky"
+    }
+  ],
   "engines": {
     "node": ">=18.18.0"
   },
