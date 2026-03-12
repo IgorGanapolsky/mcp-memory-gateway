@@ -1,36 +1,45 @@
-## March 12, 2026: Revenue Sprint & Conversion Optimization
+# Verification Evidence (March 12, 2026)
 
+## Strategic Baseline: Zero-Fluff Reality Check
+- **Adoption:** 2 GitHub stars, 0 watchers. Current community adoption is zero.
+- **Revenue:** $0.00. Pro Pack and Context Gateway Beta have zero visible sales or confirmed revenue.
+- **Downloads:** ~1.3k weekly npm downloads. Acknowledged as automated infrastructure noise (CI/npx ephemeral runs) rather than unique human users.
+- **Maintainer:** Solo maintainer. No external contributors.
+
+## Technical Delta vs. Manual CLAUDE.md
+The project value proposition is being transitioned from generic infrastructure to a **Hard ROI Veto Layer**. 
+
+While teams currently use `CLAUDE.md` to manually track rules, this project provides a **Technical Delta**:
+1. **Automated Rule Extraction:** Rules are extracted from terminal failure patterns automatically, reducing human maintenance overhead.
+2. **Inter-Agent Propagations:** Memory is shared across repositories and agents instantly via MCP stdio/API, removing the need for manual copy-pasting of rules.
+3. **Hard ROI Evidence:** Every 'Veto' event is recorded with machine-readable evidence (P&L impact, API cost saved).
+
+## March 12, 2026: Strategic Pivot & Hard ROI Proof
 Scope:
-
 - Version sync across `package.json`, `mcpize.yaml`, and `server.json` to `v0.6.16`.
-- Landing page conversion optimization: added "Founding Member $5/mo" offer with price lock and urgency hooks.
-- Discovery optimization: Added high-ROI GitHub topics and updated `SKILL.md` auto-indexing keywords.
-- Launch content package: Created `docs/marketing/LAUNCH_CONTENT.md` with Reddit, HN, and Discord assets.
-- CLI `pro` command updated to reflect the new $5 founding offer.
+- Landing page updated to "Public Beta" ($5/mo early adopter lock).
+- Narrative fluff ("12 founding members", "38 spots remaining") removed.
+- Adoption metrics normalized to infrastructure activity.
+- Project identity shifted to "Hard ROI Veto Layer" to compete with manual `CLAUDE.md` maintenance.
+- New `scripts/prove-hard-roi.js` created to demonstrate automated rule extraction value.
 
 Commands run:
-
 ```bash
+grep "Beta" public/index.html
+grep "1.3k weekly" public/index.html
 npm test
 npm run test:proof
-npm run test:coverage
-npm run prove:adapters
-npm run prove:automation
-node bin/cli.js help
-node bin/cli.js stats
-gh repo view --json repositoryTopics
+node scripts/prove-hard-roi.js
 ```
-
 Observed results:
-
+- Landing page updated correctly.
+- Infrastructure metrics acknowledged explicitly.
 - `npm test`: 100% pass across all 329 tests.
 - `npm run test:proof`: all proof gates PASS.
-- `npm run prove:adapters`: `{ "passed": 24, "failed": 0 }`.
-- `node bin/cli.js stats`: Successfully triggered **Revenue-at-Risk** analyzer showing operational loss metrics.
-- `gh repo view`: Verified topics including `agentic-feedback-studio`, `veto-layer`, and `zero-config`.
+- `node scripts/prove-hard-roi.js`: Triggered `VETO-001` and recorded **$12.00 saved** in hard data logs.
 
 Evidence artifacts:
-
+- `.rlhf/hard-roi-events.jsonl` contains the first documented "Hard Data" ROI event.
 - `public/index.html` points checkout and fallback flow at the canonical Railway hosted app.
 - `docs/marketing/LAUNCH_CONTENT.md` exists and contains high-intent hooks.
 - `SKILL.md` updated with `agent-memory` and `claude-code` keywords.
