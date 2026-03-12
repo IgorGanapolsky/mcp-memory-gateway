@@ -30,6 +30,9 @@ test('public docs render the current package version', () => {
 
   assert.match(landingPage, /v__PACKAGE_VERSION__/);
   assert.match(landingPage, /Join as Founding Member — \$10\/mo/);
+  assert.match(landingPage, /Hosted onboarding at https:\/\/rlhf-feedback-loop-production\.up\.railway\.app/);
+  assert.match(landingPage, /falls back to the hosted app if checkout creation fails/);
+  assert.doesNotMatch(landingPage, /100 spots|50 founding spots/i);
   assert.match(mcpSubmission, new RegExp(`## Version\\s+${packageJson.version}`));
 });
 
