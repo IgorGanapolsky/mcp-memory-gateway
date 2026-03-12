@@ -12,8 +12,24 @@
   },
   "main": "scripts/feedback-loop.js",
   "bin": {
+    "mcp-memory-gateway": "bin/cli.js",
     "rlhf": "bin/cli.js"
   },
+  "files": [
+    "bin/",
+    "src/",
+    "scripts/",
+    "adapters/",
+    "config/",
+    "plugins/",
+    "skills/",
+    "openapi/",
+    "public/",
+    ".well-known/",
+    ".claude-plugin/",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "start": "node src/api/server.js",
     "budget:status": "node scripts/budget-guard.js --status",
