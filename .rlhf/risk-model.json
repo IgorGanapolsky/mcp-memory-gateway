@@ -1,10 +1,10 @@
 {
   "version": 1,
   "algorithm": "adaboost-stumps",
-  "trainedAt": "2026-03-11T22:11:52.085Z",
-  "exampleCount": 7,
-  "highRiskExamples": 4,
-  "baseRate": 0.5714285714285714,
+  "trainedAt": "2026-03-12T04:03:20.631Z",
+  "exampleCount": 8,
+  "highRiskExamples": 5,
+  "baseRate": 0.625,
   "featureRegistry": {
     "topTags": [
       "debug",
@@ -14,9 +14,11 @@
       "architecture",
       "autonomy",
       "budget-guard",
-      "crisis"
+      "credential-echo"
     ],
-    "topSkills": [],
+    "topSkills": [
+      "incident-response"
+    ],
     "domains": [
       "general",
       "testing",
@@ -69,7 +71,8 @@
     "tag:architecture",
     "tag:autonomy",
     "tag:budget-guard",
-    "tag:crisis"
+    "tag:credential-echo",
+    "skill:incident-response"
   ],
   "learners": [
     {
