@@ -26,7 +26,7 @@ test('public docs render the current package version', () => {
   const mcpSubmission = readText('docs/mcp-hub-submission.md');
 
   assert.match(landingPage, /v__PACKAGE_VERSION__/);
-  assert.match(landingPage, /Join as Founding Member — \$5\/mo forever/);
+  assert.match(landingPage, /Join as Founding Member — \$10\/mo/);
   assert.match(mcpSubmission, new RegExp(`## Version\\s+${packageJson.version}`));
 });
 
