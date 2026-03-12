@@ -39,6 +39,9 @@ test('GET /health returns status ok', async () => {
   const res = await fetch(`http://localhost:${DEPLOY_PORT}/health`);
   const body = await res.json();
   assert.equal(body.status, 'ok');
+  assert.ok(body.deployment);
+  assert.equal(typeof body.deployment.appOrigin, 'string');
+  assert.equal(typeof body.deployment.billingApiBaseUrl, 'string');
 });
 
 test('GET /health returns package version', async () => {
@@ -82,10 +85,17 @@ test('CI Railway deploy is gated by explicit repo configuration', () => {
   const workflow = fs.readFileSync(path.join(PROJECT_ROOT, '.github', 'workflows', 'ci.yml'), 'utf8');
 
   assert.match(workflow, /Check Railway deployment configuration/);
+  assert.match(workflow, /Enforce deploy policy/);
+  assert.match(workflow, /node scripts\/deploy-policy\.js --profiles=runtime,billing,deploy/);
   assert.match(workflow, /steps\.railway-config\.outputs\.enabled == 'true'/);
   assert.match(workflow, /RAILWAY_PROJECT_ID/);
   assert.match(workflow, /RAILWAY_ENVIRONMENT_ID/);
   assert.match(workflow, /RAILWAY_HEALTHCHECK_URL/);
+  assert.match(workflow, /RLHF_PUBLIC_APP_ORIGIN/);
+  assert.match(workflow, /RLHF_BILLING_API_BASE_URL/);
+  assert.match(workflow, /RLHF_API_KEY_ROTATED_AT/);
+  assert.match(workflow, /STRIPE_SECRET_KEY_ROTATED_AT/);
+  assert.match(workflow, /STRIPE_WEBHOOK_SECRET_ROTATED_AT/);
   assert.match(workflow, /railway up/);
   assert.match(workflow, /--ci/);
   assert.match(workflow, /--project "\$RAILWAY_PROJECT_ID"/);

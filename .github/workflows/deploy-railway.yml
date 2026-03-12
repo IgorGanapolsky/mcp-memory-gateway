@@ -8,20 +8,67 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RLHF_API_KEY: ${{ secrets.RLHF_API_KEY }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+      RAILWAY_ENVIRONMENT_ID: ${{ vars.RAILWAY_ENVIRONMENT_ID }}
+      RAILWAY_SERVICE: ${{ vars.RAILWAY_SERVICE }}
+      RAILWAY_HEALTHCHECK_URL: ${{ vars.RAILWAY_HEALTHCHECK_URL }}
+      RLHF_PUBLIC_APP_ORIGIN: ${{ vars.RLHF_PUBLIC_APP_ORIGIN }}
+      RLHF_BILLING_API_BASE_URL: ${{ vars.RLHF_BILLING_API_BASE_URL }}
+      RAILWAY_TOKEN_ROTATED_AT: ${{ vars.RAILWAY_TOKEN_ROTATED_AT }}
+      RLHF_API_KEY_ROTATED_AT: ${{ vars.RLHF_API_KEY_ROTATED_AT }}
+      STRIPE_SECRET_KEY_ROTATED_AT: ${{ vars.STRIPE_SECRET_KEY_ROTATED_AT }}
+      STRIPE_WEBHOOK_SECRET_ROTATED_AT: ${{ vars.STRIPE_WEBHOOK_SECRET_ROTATED_AT }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Check Railway deployment configuration
+        id: railway-config
+        run: |
+          if [ -z "$RAILWAY_TOKEN" ] || [ -z "$RAILWAY_PROJECT_ID" ] || [ -z "$RAILWAY_ENVIRONMENT_ID" ] || [ -z "$RAILWAY_HEALTHCHECK_URL" ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Railway deploy skipped: missing RAILWAY_TOKEN, RAILWAY_PROJECT_ID, RAILWAY_ENVIRONMENT_ID, or RAILWAY_HEALTHCHECK_URL."
+            exit 0
+          fi
+
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+      - name: Enforce deploy policy
+        if: steps.railway-config.outputs.enabled == 'true'
+        run: node scripts/deploy-policy.js --profiles=runtime,billing,deploy
       - name: Install Railway CLI
+        if: steps.railway-config.outputs.enabled == 'true'
         run: npm install -g @railway/cli
       - name: Set Railway environment variables
+        if: steps.railway-config.outputs.enabled == 'true'
         run: |
-          railway variables set STRIPE_SECRET_KEY="${{ secrets.STRIPE_SECRET_KEY }}" --service rlhf-feedback-loop || true
-          railway variables set STRIPE_WEBHOOK_SECRET="${{ secrets.STRIPE_WEBHOOK_SECRET }}" --service rlhf-feedback-loop || true
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          SERVICE_ARGS=()
+          if [ -n "$RAILWAY_SERVICE" ]; then
+            SERVICE_ARGS+=(--service "$RAILWAY_SERVICE")
+          fi
+          railway variables set STRIPE_SECRET_KEY="$STRIPE_SECRET_KEY" "${SERVICE_ARGS[@]}"
+          railway variables set STRIPE_WEBHOOK_SECRET="$STRIPE_WEBHOOK_SECRET" "${SERVICE_ARGS[@]}"
       - name: Deploy to Railway
-        run: railway up --detach --service rlhf-feedback-loop
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        if: steps.railway-config.outputs.enabled == 'true'
+        run: |
+          SERVICE_ARGS=()
+          if [ -n "$RAILWAY_SERVICE" ]; then
+            SERVICE_ARGS+=(--service "$RAILWAY_SERVICE")
+          fi
+          railway up --ci --detach --project "$RAILWAY_PROJECT_ID" --environment "$RAILWAY_ENVIRONMENT_ID" "${SERVICE_ARGS[@]}"
+      - name: Verify deployment health
+        if: steps.railway-config.outputs.enabled == 'true'
+        run: |
+          echo "Waiting 30s for deploy to stabilise..."
+          sleep 30
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$RAILWAY_HEALTHCHECK_URL")
+          echo "Health check status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "Health check failed with status $STATUS"
+            exit 1
+          fi

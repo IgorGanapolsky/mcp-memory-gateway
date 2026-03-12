@@ -79,7 +79,7 @@ Optional manual config (`~/.claude/claude_desktop_config.json` or `.claude/setti
       "command": "npx",
       "args": ["-y", "rlhf-feedback-loop@0.6.16", "serve"],
       "env": {
-        "RLHF_BASE_URL": "https://rlhf-feedback-loop-710216278770.us-central1.run.app",
+        "RLHF_BASE_URL": "https://rlhf-feedback-loop-production.up.railway.app",
         "RLHF_API_KEY": "rlhf_YOUR_KEY_HERE"
       }
     }

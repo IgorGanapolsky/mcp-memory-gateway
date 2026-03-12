@@ -14,6 +14,8 @@ process.env._TEST_LOCAL_CHECKOUT_SESSIONS_PATH = path.join(tmpFeedbackDir, 'loca
 // Force local mode for billing tests by clearing Stripe keys
 process.env.STRIPE_SECRET_KEY = '';
 process.env.STRIPE_PRICE_ID = '';
+process.env.RLHF_PUBLIC_APP_ORIGIN = 'https://app.example.com';
+process.env.RLHF_BILLING_API_BASE_URL = 'https://billing.example.com';
 
 const { startServer } = require('../src/api/server');
 const billing = require('../scripts/billing');
@@ -27,6 +29,8 @@ test.before(async () => {
 
 test.after(async () => {
   await new Promise((resolve) => handle.server.close(resolve));
+  delete process.env.RLHF_PUBLIC_APP_ORIGIN;
+  delete process.env.RLHF_BILLING_API_BASE_URL;
   try {
     fs.rmSync(tmpFeedbackDir, { recursive: true, force: true });
   } catch (err) {
@@ -54,7 +58,9 @@ test('root serves the landing page by default', async () => {
   assert.match(body, /GO_TO_MARKET_REVENUE_WEDGE_2026-03\.md/);
   assert.match(body, /proof\/compatibility\/report\.json/);
   assert.match(body, /proof\/automation\/report\.json/);
-  assert.match(body, /\/v1\/billing\/checkout/);
+  assert.match(body, /https:\/\/billing\.example\.com\/v1\/billing\/checkout/);
+  assert.match(body, /const appOrigin = 'https:\/\/app\.example\.com';/);
+  assert.match(body, /successUrl: `\$\{appOrigin\}\/success\?session_id=\{CHECKOUT_SESSION_ID\}&trace_id=\$\{encodeURIComponent\(traceId\)\}`/);
 });
 
 test('provisioning endpoint works', async () => {
@@ -93,7 +99,8 @@ test('success page serves hosted onboarding shell', async () => {
 
   const body = await res.text();
   assert.match(body, /Your hosted API key is ready\./);
-  assert.match(body, /\/v1\/billing\/session\?sessionId=/);
+  assert.match(body, /const sessionEndpoint = "https:\/\/billing\.example\.com\/v1\/billing\/session";/);
+  assert.match(body, /\+ '\?sessionId=' \+ encodeURIComponent\(sessionId\)/);
 });
 
 test('cancel page serves retry message', async () => {
@@ -295,9 +302,12 @@ test('billing checkout endpoint is public', async () => {
     }),
   });
   assert.equal(res.status, 200);
+  assert.equal(res.headers.get('access-control-allow-origin'), '*');
   const body = await res.json();
   assert.ok(typeof body.sessionId === 'string');
   assert.equal(body.localMode, true);
+  assert.match(body.traceId, /^checkout_/);
+  assert.equal(res.headers.get('x-rlhf-trace-id'), body.traceId);
 });
 
 test('billing session endpoint returns provisioned local checkout details', async () => {
@@ -321,8 +331,26 @@ test('billing session endpoint returns provisioned local checkout details', asyn
   assert.equal(sessionBody.paid, true);
   assert.equal(sessionBody.installId, 'inst_public_checkout_lookup');
   assert.ok(sessionBody.apiKey.startsWith('rlhf_'));
+  assert.equal(sessionBody.appOrigin, 'https://app.example.com');
+  assert.equal(sessionBody.apiBaseUrl, 'https://billing.example.com');
+  assert.match(sessionBody.traceId, /^checkout_/);
   assert.match(sessionBody.nextSteps.env, /RLHF_API_KEY=/);
-  assert.match(sessionBody.nextSteps.curl, /\/v1\/feedback\/capture/);
+  assert.match(sessionBody.nextSteps.env, /RLHF_API_BASE_URL=https:\/\/billing\.example\.com/);
+  assert.match(sessionBody.nextSteps.curl, /https:\/\/billing\.example\.com\/v1\/feedback\/capture/);
+});
+
+test('billing checkout supports CORS preflight', async () => {
+  const res = await fetch('http://localhost:8790/v1/billing/checkout', {
+    method: 'OPTIONS',
+    headers: {
+      origin: 'https://app.example.com',
+      'access-control-request-method': 'POST',
+      'access-control-request-headers': 'content-type',
+    },
+  });
+  assert.equal(res.status, 204);
+  assert.equal(res.headers.get('access-control-allow-origin'), '*');
+  assert.match(String(res.headers.get('access-control-allow-methods')), /POST/);
 });
 
 test('billing session endpoint rejects missing session ids', async () => {

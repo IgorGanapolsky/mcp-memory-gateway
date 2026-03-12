@@ -49,6 +49,12 @@ const {
   getFunnelAnalytics,
 } = require('../../scripts/billing');
 const {
+  resolveHostedBillingConfig,
+  createTraceId,
+  buildHostedSuccessUrl,
+  buildHostedCancelUrl,
+} = require('../../scripts/hosted-config');
+const {
   generateSkills,
 } = require('../../scripts/skill-generator');
 
@@ -65,29 +71,54 @@ function createHttpError(statusCode, message) {
   return err;
 }
 
-function sendJson(res, statusCode, payload) {
+function sendJson(res, statusCode, payload, extraHeaders = {}) {
   const body = JSON.stringify(payload);
   res.writeHead(statusCode, {
     'Content-Type': 'application/json; charset=utf-8',
     'Content-Length': Buffer.byteLength(body),
+    ...extraHeaders,
   });
   res.end(body);
 }
 
-function sendText(res, statusCode, text) {
+function sendText(res, statusCode, text, extraHeaders = {}) {
   res.writeHead(statusCode, {
     'Content-Type': 'text/plain; charset=utf-8',
     'Content-Length': Buffer.byteLength(text),
+    ...extraHeaders,
   });
   res.end(text);
 }
 
-function sendHtml(res, statusCode, html) {
+function sendHtml(res, statusCode, html, extraHeaders = {}) {
   res.writeHead(statusCode, {
     'Content-Type': 'text/html; charset=utf-8',
     'Content-Length': Buffer.byteLength(html),
+    ...extraHeaders,
   });
   res.end(html);
+}
+
+function getPublicBillingHeaders(traceId = '') {
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-RLHF-Trace-Id',
+    'Access-Control-Expose-Headers': 'X-RLHF-Trace-Id',
+  };
+  if (traceId) {
+    headers['X-RLHF-Trace-Id'] = traceId;
+  }
+  return headers;
+}
+
+function sendPublicBillingPreflight(res) {
+  res.writeHead(204, {
+    ...getPublicBillingHeaders(),
+    'Access-Control-Max-Age': '86400',
+    'Content-Length': '0',
+  });
+  res.end();
 }
 
 function getPublicOrigin(req) {
@@ -113,14 +144,14 @@ function fillTemplate(template, replacements) {
   return output;
 }
 
-function loadLandingPageHtml(origin) {
+function loadLandingPageHtml(runtimeConfig) {
   const template = fs.readFileSync(LANDING_PAGE_PATH, 'utf-8');
   return fillTemplate(template, {
     '__PACKAGE_VERSION__': pkg.version,
-    '__APP_ORIGIN__': origin,
-    '__CHECKOUT_ENDPOINT__': 'https://rlhf-feedback-loop-710216278770.us-central1.run.app/v1/billing/checkout',
-    '__CHECKOUT_FALLBACK_URL__': 'https://buy.stripe.com/fZu4gz0I47Dg9G1cGv3sI03',
-    '__FOUNDING_PRICE__': '$5/mo',
+    '__APP_ORIGIN__': runtimeConfig.appOrigin,
+    '__CHECKOUT_ENDPOINT__': runtimeConfig.checkoutEndpoint,
+    '__CHECKOUT_FALLBACK_URL__': runtimeConfig.checkoutFallbackUrl,
+    '__FOUNDING_PRICE__': runtimeConfig.foundingPrice,
     '__VERIFICATION_URL__': 'https://github.com/IgorGanapolsky/mcp-memory-gateway/blob/main/docs/VERIFICATION_EVIDENCE.md',
     '__COMPATIBILITY_REPORT_URL__': 'https://github.com/IgorGanapolsky/mcp-memory-gateway/blob/main/proof/compatibility/report.json',
     '__AUTOMATION_REPORT_URL__': 'https://github.com/IgorGanapolsky/mcp-memory-gateway/blob/main/proof/automation/report.json',
@@ -129,7 +160,7 @@ function loadLandingPageHtml(origin) {
   });
 }
 
-function renderCheckoutSuccessPage() {
+function renderCheckoutSuccessPage(runtimeConfig) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -265,6 +296,8 @@ function renderCheckoutSuccessPage() {
   <script>
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get('session_id');
+    const traceId = params.get('trace_id');
+    const sessionEndpoint = ${JSON.stringify(runtimeConfig.sessionEndpoint)};
     const statusEl = document.getElementById('status');
     const summaryEl = document.getElementById('summary');
     const keyBlock = document.getElementById('key-block');
@@ -280,7 +313,10 @@ function renderCheckoutSuccessPage() {
       }
 
       try {
-        const res = await fetch('/v1/billing/session?sessionId=' + encodeURIComponent(sessionId));
+        const sessionLookupUrl = sessionEndpoint
+          + '?sessionId=' + encodeURIComponent(sessionId)
+          + (traceId ? '&traceId=' + encodeURIComponent(traceId) : '');
+        const res = await fetch(sessionLookupUrl);
         const body = await res.json();
         if (!res.ok) {
           throw new Error(body.error || 'Unable to load checkout session.');
@@ -294,13 +330,18 @@ function renderCheckoutSuccessPage() {
         }
 
         statusEl.textContent = 'Context Gateway activated.';
-        summaryEl.textContent = 'Your API key is ready. Copy the snippets below into your workflow project.';
+        const resolvedTraceId = body.traceId || traceId || '';
+        summaryEl.textContent = resolvedTraceId
+          ? 'Your API key is ready. Copy the snippets below into your workflow project. Trace: ' + resolvedTraceId + '.'
+          : 'Your API key is ready. Copy the snippets below into your workflow project.';
         keyBlock.textContent = body.apiKey || 'Provisioned, but no key was returned.';
         envBlock.textContent = body.nextSteps && body.nextSteps.env ? body.nextSteps.env : 'Environment snippet unavailable.';
         curlBlock.textContent = body.nextSteps && body.nextSteps.curl ? body.nextSteps.curl : 'curl snippet unavailable.';
       } catch (err) {
         statusEl.textContent = 'Provisioning lookup failed.';
-        summaryEl.textContent = 'You can retry this page. If it keeps failing, inspect the hosted API logs.';
+        summaryEl.textContent = traceId
+          ? 'You can retry this page. If it keeps failing, inspect the hosted API logs with trace ' + traceId + '.'
+          : 'You can retry this page. If it keeps failing, inspect the hosted API logs.';
         keyBlock.textContent = err && err.message ? err.message : 'Unknown error';
       }
     }
@@ -311,7 +352,7 @@ function renderCheckoutSuccessPage() {
 </html>`;
 }
 
-function renderCheckoutCancelledPage() {
+function renderCheckoutCancelledPage(runtimeConfig) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -355,7 +396,7 @@ function renderCheckoutCancelledPage() {
   <main>
     <h1>Checkout cancelled.</h1>
     <p>No charge was made. You can return to the landing page and restart checkout whenever you are ready.</p>
-    <a href="/">Return to Context Gateway</a>
+    <a href="${runtimeConfig.appOrigin}">Return to Context Gateway</a>
   </main>
 </body>
 </html>`;
@@ -485,6 +526,7 @@ function createApiServer() {
     const parsed = new URL(req.url, 'http://localhost');
     const pathname = parsed.pathname;
     const publicOrigin = getPublicOrigin(req);
+    const hostedConfig = resolveHostedBillingConfig({ requestOrigin: publicOrigin });
 
     // Public MCP endpoint — responds to Smithery registry scanning and MCP initialize
     // The initialize handshake is unauthenticated; subsequent tool calls require Bearer auth
@@ -567,7 +609,7 @@ function createApiServer() {
       }
 
       try {
-        sendHtml(res, 200, loadLandingPageHtml(publicOrigin));
+        sendHtml(res, 200, loadLandingPageHtml(hostedConfig));
       } catch (err) {
         sendText(res, 500, err.message || 'Landing page unavailable');
       }
@@ -575,12 +617,12 @@ function createApiServer() {
     }
 
     if (req.method === 'GET' && pathname === '/success') {
-      sendHtml(res, 200, renderCheckoutSuccessPage());
+      sendHtml(res, 200, renderCheckoutSuccessPage(hostedConfig));
       return;
     }
 
     if (req.method === 'GET' && pathname === '/cancel') {
-      sendHtml(res, 200, renderCheckoutCancelledPage());
+      sendHtml(res, 200, renderCheckoutCancelledPage(hostedConfig));
       return;
     }
 
@@ -608,7 +650,7 @@ function createApiServer() {
           { name: 'generate_skill', description: 'Auto-generate Claude skills from feedback patterns' },
         ],
         repository: 'https://github.com/IgorGanapolsky/mcp-memory-gateway',
-        homepage: 'https://rlhf-feedback-loop-production.up.railway.app',
+        homepage: hostedConfig.appOrigin,
       });
       return;
     }
@@ -618,6 +660,10 @@ function createApiServer() {
         status: 'ok',
         version: pkg.version,
         uptime: process.uptime(),
+        deployment: {
+          appOrigin: hostedConfig.appOrigin,
+          billingApiBaseUrl: hostedConfig.billingApiBaseUrl,
+        },
       });
       return;
     }
@@ -739,30 +785,45 @@ function createApiServer() {
       return;
     }
 
+    if (req.method === 'OPTIONS' && (pathname === '/v1/billing/checkout' || pathname === '/v1/billing/session')) {
+      sendPublicBillingPreflight(res);
+      return;
+    }
+
     // Public checkout session creation for top-of-funnel acquisition.
     if (req.method === 'POST' && pathname === '/v1/billing/checkout') {
       try {
         const body = await parseJsonBody(req);
+        const traceId = body.traceId || createTraceId('checkout');
+        const responseHeaders = getPublicBillingHeaders(traceId);
         // $49 Wedge: If oneTime is set, create a one-time payment session
         const isOneTime = body.oneTime === true || body.amount === 49;
         
         const result = await createCheckoutSession({
-          successUrl: body.successUrl || `${publicOrigin}/success?session_id={CHECKOUT_SESSION_ID}`,
-          cancelUrl: body.cancelUrl || `${publicOrigin}/cancel`,
+          successUrl: body.successUrl || buildHostedSuccessUrl(hostedConfig.appOrigin, traceId),
+          cancelUrl: body.cancelUrl || buildHostedCancelUrl(hostedConfig.appOrigin, traceId),
           customerEmail: body.customerEmail,
           installId: body.installId,
+          traceId,
           metadata: { 
             ...body.metadata, 
+            traceId,
             oneTime: isOneTime,
             credits: isOneTime ? 500 : 0 
           },
         });
-        sendJson(res, 200, { ...result, price: isOneTime ? 49 : 10, type: isOneTime ? 'one-time' : 'subscription' });
+        sendJson(res, 200, {
+          ...result,
+          traceId: result.traceId || traceId,
+          price: isOneTime ? 49 : 10,
+          type: isOneTime ? 'one-time' : 'subscription',
+        }, responseHeaders);
       } catch (err) {
+        const fallbackTraceId = createTraceId('checkout_error');
         if (err.statusCode) {
-          sendJson(res, err.statusCode, { error: err.message });
+          sendJson(res, err.statusCode, { error: err.message }, getPublicBillingHeaders(fallbackTraceId));
         } else {
-          sendJson(res, 500, { error: err.message || 'Internal Server Error' });
+          sendJson(res, 500, { error: err.message || 'Internal Server Error' }, getPublicBillingHeaders(fallbackTraceId));
         }
       }
       return;
@@ -771,6 +832,7 @@ function createApiServer() {
     if (req.method === 'GET' && pathname === '/v1/billing/session') {
       try {
         const sessionId = parsed.searchParams.get('sessionId');
+        const requestedTraceId = parsed.searchParams.get('traceId') || '';
         if (!sessionId) {
           throw createHttpError(400, 'sessionId is required');
         }
@@ -780,19 +842,24 @@ function createApiServer() {
           throw createHttpError(404, 'Checkout session not found');
         }
 
+        const resolvedTraceId = result.traceId || requestedTraceId;
+
         sendJson(res, 200, {
           ...result,
-          apiBaseUrl: publicOrigin,
+          traceId: resolvedTraceId || null,
+          appOrigin: hostedConfig.appOrigin,
+          apiBaseUrl: hostedConfig.billingApiBaseUrl,
           nextSteps: {
-            env: `RLHF_API_KEY=${result.apiKey || ''}\nRLHF_API_BASE_URL=${publicOrigin}`,
-            curl: `curl -X POST ${publicOrigin}/v1/feedback/capture \\\n  -H 'Authorization: Bearer ${result.apiKey || ''}' \\\n  -H 'Content-Type: application/json' \\\n  -d '{"signal":"down","context":"example","whatWentWrong":"example","whatToChange":"example"}'`,
+            env: `RLHF_API_KEY=${result.apiKey || ''}\nRLHF_API_BASE_URL=${hostedConfig.billingApiBaseUrl}`,
+            curl: `curl -X POST ${hostedConfig.billingApiBaseUrl}/v1/feedback/capture \\\n  -H 'Authorization: Bearer ${result.apiKey || ''}' \\\n  -H 'Content-Type: application/json' \\\n  -d '{"signal":"down","context":"example","whatWentWrong":"example","whatToChange":"example"}'`,
           },
-        });
+        }, getPublicBillingHeaders(resolvedTraceId));
       } catch (err) {
+        const requestedTraceId = parsed.searchParams.get('traceId') || '';
         if (err.statusCode) {
-          sendJson(res, err.statusCode, { error: err.message });
+          sendJson(res, err.statusCode, { error: err.message }, getPublicBillingHeaders(requestedTraceId));
         } else {
-          sendJson(res, 500, { error: err.message || 'Internal Server Error' });
+          sendJson(res, 500, { error: err.message || 'Internal Server Error' }, getPublicBillingHeaders(requestedTraceId));
         }
       }
       return;
@@ -1091,7 +1158,7 @@ function createApiServer() {
             return;
           }
           sendJson(res, 200, {
-            newKey: result.newKey,
+            newKey: result.key,
             message: 'Key rotated. Update your configuration.',
           });
         } catch (err) {

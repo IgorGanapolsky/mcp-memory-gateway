@@ -832,7 +832,7 @@
     (function () {
       const checkoutEndpoint = '__CHECKOUT_ENDPOINT__';
       const checkoutFallbackUrl = '__CHECKOUT_FALLBACK_URL__';
-      const appOrigin = 'https://rlhf-feedback-loop-production.up.railway.app';
+      const appOrigin = '__APP_ORIGIN__';
       const installStorageKey = 'rlhf_cloud_pro_install_id';
 
       function getInstallId() {
@@ -846,8 +846,13 @@
         return generated;
       }
 
+      function createTraceId() {
+        return 'checkout_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+      }
+
       async function startCheckout(options = {}) {
         const installId = getInstallId();
+        const traceId = createTraceId();
 
         try {
           const response = await fetch(checkoutEndpoint, {
@@ -857,12 +862,14 @@
             },
             body: JSON.stringify({
               installId,
+              traceId,
               oneTime: options.oneTime === true,
-              successUrl: `${appOrigin}/success?session_id={CHECKOUT_SESSION_ID}`,
-              cancelUrl: `${appOrigin}/cancel`,
+              successUrl: `${appOrigin}/success?session_id={CHECKOUT_SESSION_ID}&trace_id=${encodeURIComponent(traceId)}`,
+              cancelUrl: `${appOrigin}/cancel?trace_id=${encodeURIComponent(traceId)}`,
               metadata: {
                 source: 'landing_page',
                 origin: appOrigin,
+                traceId,
                 oneTime: options.oneTime === true
               }
             })
@@ -879,7 +886,8 @@
           }
 
           if (body.sessionId) {
-            window.location.href = '/success?session_id=' + encodeURIComponent(body.sessionId);
+            const redirectTraceId = body.traceId || traceId;
+            window.location.href = `${appOrigin}/success?session_id=${encodeURIComponent(body.sessionId)}&trace_id=${encodeURIComponent(redirectTraceId)}`;
             return;
           }
 

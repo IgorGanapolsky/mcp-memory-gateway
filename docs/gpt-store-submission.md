@@ -56,7 +56,7 @@ If the user asks for a summary of recent feedback patterns, call GET /v1/feedbac
 If the user asks for prevention rules, call POST /v1/feedback/rules.
 If the user asks for DPO export, call POST /v1/dpo/export.
 
-API base URL: https://rlhf-feedback-loop-710216278770.us-central1.run.app
+API base URL: https://rlhf-feedback-loop-production.up.railway.app
 Authentication: Bearer token in the Authorization header (user must provide their API key).
 ```
 
@@ -81,7 +81,7 @@ To import into GPT Builder:
 1. Open GPT Builder → Actions → Add Action
 2. Paste the contents of `adapters/chatgpt/openapi.yaml`
 3. Set authentication to: **API Key** → Header name: `Authorization` → Format: `Bearer {key}`
-4. Server URL: `https://rlhf-feedback-loop-710216278770.us-central1.run.app`
+4. Server URL: `https://rlhf-feedback-loop-production.up.railway.app`
 5. Verification evidence: `https://github.com/IgorGanapolsky/rlhf-feedback-loop/blob/main/docs/VERIFICATION_EVIDENCE.md`
 
 ### Inline Schema (minimal version for quick submission)
@@ -93,7 +93,7 @@ info:
   description: Capture feedback from AI coding agents, generate prevention rules, and export DPO training pairs.
   version: 1.2.0
 servers:
-  - url: https://rlhf-feedback-loop-710216278770.us-central1.run.app
+  - url: https://rlhf-feedback-loop-production.up.railway.app
     description: Context Gateway hosted API
 paths:
   /v1/feedback/capture:
@@ -229,5 +229,5 @@ https://github.com/IgorGanapolsky/rlhf-feedback-loop/blob/main/SECURITY.md
 ## Notes
 
 - The GPT Store review process typically takes 1-5 business days.
-- Ensure the Cloud Run deployment is live before submitting (the actions will be tested by reviewers).
+- Ensure the hosted Railway deployment is live before submitting (the actions will be tested by reviewers).
 - The API key for the GPT actions should be a dedicated key created via Stripe checkout.
