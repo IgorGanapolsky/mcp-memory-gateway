@@ -1,0 +1,443 @@
+{
+  "version": 1,
+  "gates": [
+    {
+      "id": "auto-pattern-2",
+      "trigger": "auto:pattern-2",
+      "pattern": "pattern-2",
+      "action": "warn",
+      "message": "Auto-promoted: \"error 2\" (3 occurrences in 30 days)",
+      "severity": "medium",
+      "occurrences": 3,
+      "promotedAt": "2026-03-12T20:05:49.935Z",
+      "source": "auto-promote"
+    },
+    {
+      "id": "auto-pattern-3",
+      "trigger": "auto:pattern-3",
+      "pattern": "pattern-3",
+      "action": "warn",
+      "message": "Auto-promoted: \"error 3\" (3 occurrences in 30 days)",
+      "severity": "medium",
+      "occurrences": 3,
+      "promotedAt": "2026-03-12T20:05:49.935Z",
+      "source": "auto-promote"
+    },
+    {
+      "id": "auto-pattern-4",
+      "trigger": "auto:pattern-4",
+      "pattern": "pattern-4",
+      "action": "warn",
+      "message": "Auto-promoted: \"error 4\" (3 occurrences in 30 days)",
+      "severity": "medium",
+      "occurrences": 3,
+      "promotedAt": "2026-03-12T20:05:49.935Z",
+      "source": "auto-promote"
+    },
+    {
+      "id": "auto-pattern-5",
+      "trigger": "auto:pattern-5",
+      "pattern": "pattern-5",
+      "action": "warn",
+      "message": "Auto-promoted: \"error 5\" (3 occurrences in 30 days)",
+      "severity": "medium",
+      "occurrences": 3,
+      "promotedAt": "2026-03-12T20:05:49.935Z",
+      "source": "auto-promote"
+    },
+    {
+      "id": "auto-pattern-6",
+      "trigger": "auto:pattern-6",
+      "pattern": "pattern-6",
+      "action": "warn",
+      "message": "Auto-promoted: \"error 6\" (3 occurrences in 30 days)",
+      "severity": "medium",
+      "occurrences": 3,
+      "promotedAt": "2026-03-12T20:05:49.935Z",
+      "source": "auto-promote"
+    },
+    {
+      "id": "auto-pattern-7",
+      "trigger": "auto:pattern-7",
+      "pattern": "pattern-7",
+      "action": "warn",
+      "message": "Auto-promoted: \"error 7\" (3 occurrences in 30 days)",
+      "severity": "medium",
+      "occurrences": 3,
+      "promotedAt": "2026-03-12T20:05:49.935Z",
+      "source": "auto-promote"
+    },
+    {
+      "id": "auto-pattern-8",
+      "trigger": "auto:pattern-8",
+      "pattern": "pattern-8",
+      "action": "warn",
+      "message": "Auto-promoted: \"error 8\" (3 occurrences in 30 days)",
+      "severity": "medium",
+      "occurrences": 3,
+      "promotedAt": "2026-03-12T20:05:49.935Z",
+      "source": "auto-promote"
+    },
+    {
+      "id": "auto-pattern-9",
+      "trigger": "auto:pattern-9",
+      "pattern": "pattern-9",
+      "action": "warn",
+      "message": "Auto-promoted: \"error 9\" (3 occurrences in 30 days)",
+      "severity": "medium",
+      "occurrences": 3,
+      "promotedAt": "2026-03-12T20:05:49.935Z",
+      "source": "auto-promote"
+    },
+    {
+      "id": "auto-pattern-10",
+      "trigger": "auto:pattern-10",
+      "pattern": "pattern-10",
+      "action": "warn",
+      "message": "Auto-promoted: \"error 10\" (3 occurrences in 30 days)",
+      "severity": "medium",
+      "occurrences": 3,
+      "promotedAt": "2026-03-12T20:05:49.935Z",
+      "source": "auto-promote"
+    },
+    {
+      "id": "auto-pipeline-integration-test",
+      "trigger": "auto:pipeline-integration-test",
+      "pattern": "pipeline-integration-test",
+      "action": "warn",
+      "message": "Auto-promoted: \"Pipeline integration test failure 2\" (3 occurrences in 30 days)",
+      "severity": "medium",
+      "occurrences": 3,
+      "promotedAt": "2026-03-12T20:05:49.999Z",
+      "source": "auto-promote"
+    }
+  ],
+  "promotionLog": [
+    {
+      "type": "new",
+      "gateId": "auto-pr-review",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:24.439Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-execution-gap",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:24.444Z"
+    },
+    {
+      "type": "upgrade",
+      "gateId": "auto-execution-gap",
+      "from": "warn",
+      "to": "block",
+      "occurrences": 5,
+      "timestamp": "2026-03-12T20:05:24.446Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-dedup-test",
+      "action": "warn",
+      "occurrences": 4,
+      "timestamp": "2026-03-12T20:05:24.450Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-0",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:24.459Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-1",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:24.459Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-2",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:24.459Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-3",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:24.459Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-4",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:24.459Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-5",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:24.459Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-6",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:24.459Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-pr-review",
+      "timestamp": "2026-03-12T20:05:24.459Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-7",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:24.459Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-execution-gap",
+      "timestamp": "2026-03-12T20:05:24.459Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-8",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:24.459Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-dedup-test",
+      "timestamp": "2026-03-12T20:05:24.459Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-9",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:24.459Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-pattern-0",
+      "timestamp": "2026-03-12T20:05:24.459Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-10",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:24.459Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-pattern-1",
+      "timestamp": "2026-03-12T20:05:24.491Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pipeline-integration-test",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:24.491Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-pattern-2",
+      "timestamp": "2026-03-12T20:05:49.914Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pr-review",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:49.914Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-pattern-3",
+      "timestamp": "2026-03-12T20:05:49.917Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-execution-gap",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:49.917Z"
+    },
+    {
+      "type": "upgrade",
+      "gateId": "auto-execution-gap",
+      "from": "warn",
+      "to": "block",
+      "occurrences": 5,
+      "timestamp": "2026-03-12T20:05:49.920Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-pattern-4",
+      "timestamp": "2026-03-12T20:05:49.923Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-dedup-test",
+      "action": "warn",
+      "occurrences": 4,
+      "timestamp": "2026-03-12T20:05:49.923Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-pattern-5",
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-0",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-pattern-6",
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-1",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-pattern-7",
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-2",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-pattern-8",
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-3",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-pattern-9",
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-4",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-pattern-10",
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-5",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-pipeline-integration-test",
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-6",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-pr-review",
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-7",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-execution-gap",
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-8",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-dedup-test",
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-9",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-pattern-0",
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pattern-10",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:49.935Z"
+    },
+    {
+      "type": "rotated",
+      "removedGateId": "auto-pattern-1",
+      "timestamp": "2026-03-12T20:05:49.999Z"
+    },
+    {
+      "type": "new",
+      "gateId": "auto-pipeline-integration-test",
+      "action": "warn",
+      "occurrences": 3,
+      "timestamp": "2026-03-12T20:05:49.999Z"
+    }
+  ]
+}
