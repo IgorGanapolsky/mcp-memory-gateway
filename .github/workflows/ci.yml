@@ -75,10 +75,19 @@ jobs:
     timeout-minutes: 15
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RLHF_API_KEY: ${{ secrets.RLHF_API_KEY }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
       RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
       RAILWAY_ENVIRONMENT_ID: ${{ vars.RAILWAY_ENVIRONMENT_ID }}
       RAILWAY_SERVICE: ${{ vars.RAILWAY_SERVICE }}
       RAILWAY_HEALTHCHECK_URL: ${{ vars.RAILWAY_HEALTHCHECK_URL }}
+      RLHF_PUBLIC_APP_ORIGIN: ${{ vars.RLHF_PUBLIC_APP_ORIGIN }}
+      RLHF_BILLING_API_BASE_URL: ${{ vars.RLHF_BILLING_API_BASE_URL }}
+      RAILWAY_TOKEN_ROTATED_AT: ${{ vars.RAILWAY_TOKEN_ROTATED_AT }}
+      RLHF_API_KEY_ROTATED_AT: ${{ vars.RLHF_API_KEY_ROTATED_AT }}
+      STRIPE_SECRET_KEY_ROTATED_AT: ${{ vars.STRIPE_SECRET_KEY_ROTATED_AT }}
+      STRIPE_WEBHOOK_SECRET_ROTATED_AT: ${{ vars.STRIPE_WEBHOOK_SECRET_ROTATED_AT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -93,6 +102,10 @@ jobs:
           fi
 
           echo "enabled=true" >> "$GITHUB_OUTPUT"
+
+      - name: Enforce deploy policy
+        if: steps.railway-config.outputs.enabled == 'true'
+        run: node scripts/deploy-policy.js --profiles=runtime,billing,deploy
 
       - name: Install Railway CLI
         if: steps.railway-config.outputs.enabled == 'true'

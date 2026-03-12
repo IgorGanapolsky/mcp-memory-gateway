@@ -835,9 +835,10 @@
 
   <script>
     (function () {
-      const checkoutEndpoint = 'https://rlhf-feedback-loop-710216278770.us-central1.run.app/v1/billing/checkout';
+      const canonicalAppOrigin = 'https://rlhf-feedback-loop-production.up.railway.app';
+      const checkoutEndpoint = canonicalAppOrigin + '/v1/billing/checkout';
       const checkoutFallbackUrl = 'https://buy.stripe.com/fZu4gz0I47Dg9G1cGv3sI03';
-      const appOrigin = 'https://mcp-gateway.vercel.app';
+      const appOrigin = canonicalAppOrigin;
       const installStorageKey = 'rlhf_cloud_pro_install_id';
 
       function getInstallId() {
@@ -851,8 +852,13 @@
         return generated;
       }
 
+      function createTraceId() {
+        return 'checkout_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+      }
+
       async function startCheckout() {
         const installId = getInstallId();
+        const traceId = createTraceId();
 
         try {
           const response = await fetch(checkoutEndpoint, {
@@ -862,9 +868,13 @@
             },
             body: JSON.stringify({
               installId,
+              traceId,
+              successUrl: `${appOrigin}/success?session_id={CHECKOUT_SESSION_ID}&trace_id=${encodeURIComponent(traceId)}`,
+              cancelUrl: `${appOrigin}/cancel?trace_id=${encodeURIComponent(traceId)}`,
               metadata: {
                 source: 'landing_page',
-                origin: appOrigin
+                origin: appOrigin,
+                traceId
               }
             })
           });
@@ -880,7 +890,8 @@
           }
 
           if (body.sessionId) {
-            window.location.href = '/success?session_id=' + encodeURIComponent(body.sessionId);
+            const redirectTraceId = body.traceId || traceId;
+            window.location.href = `${appOrigin}/success?session_id=${encodeURIComponent(body.sessionId)}&trace_id=${encodeURIComponent(redirectTraceId)}`;
             return;
           }
 

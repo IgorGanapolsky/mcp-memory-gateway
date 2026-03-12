@@ -102,10 +102,20 @@ describe('billing.js — funnel ledger', () => {
     const billing = require('../scripts/billing');
     const result = await billing.createCheckoutSession({ installId: 'inst_123', metadata: { campaign: 'test' } });
     assert.ok(result.sessionId.startsWith('test_session_'));
+    assert.match(result.traceId, /^checkout_/);
     const events = readLedgerEvents();
     const acq = events.find(e => e.stage === 'acquisition');
     assert.ok(acq);
     assert.equal(acq.installId, 'inst_123');
+    assert.equal(acq.traceId, result.traceId);
+  });
+
+  test('checkout session status preserves trace id for cross-service lookup', async () => {
+    const billing = require('../scripts/billing');
+    const checkout = await billing.createCheckoutSession({ installId: 'inst_trace_lookup' });
+    const session = await billing.getCheckoutSessionStatus(checkout.sessionId);
+    assert.equal(session.found, true);
+    assert.equal(session.traceId, checkout.traceId);
   });
 
   test('recordUsage emits activation only once', () => {
@@ -163,7 +173,10 @@ describe('API server — /v1/billing/* routes', () => {
       body: JSON.stringify({ installId: 'inst_api' })
     });
     assert.equal(res.status, 200);
+    assert.equal(res.headers.get('access-control-allow-origin'), '*');
     const body = await res.json();
     assert.ok(body && body.sessionId && body.sessionId.startsWith('test_session_'));
+    assert.match(body.traceId, /^checkout_/);
+    assert.equal(res.headers.get('x-rlhf-trace-id'), body.traceId);
   });
 });

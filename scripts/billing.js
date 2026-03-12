@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const Stripe = require('stripe');
+const { createTraceId } = require('./hosted-config');
 
 // ---------------------------------------------------------------------------
 // Config
@@ -60,9 +61,17 @@ function sanitizeMetadata(metadata) {
   return { ...metadata };
 }
 
-function appendFunnelEvent({ stage, event, installId = null, evidence, metadata = {} } = {}) {
+function appendFunnelEvent({ stage, event, installId = null, traceId = null, evidence, metadata = {} } = {}) {
   if (!stage || !event) return { written: false, reason: 'missing_stage_or_event' };
-  const payload = { timestamp: new Date().toISOString(), stage, event, evidence: evidence || event, installId: installId || null, metadata: sanitizeMetadata(metadata) };
+  const payload = {
+    timestamp: new Date().toISOString(),
+    stage,
+    event,
+    evidence: evidence || event,
+    installId: installId || null,
+    traceId: traceId || metadata.traceId || null,
+    metadata: sanitizeMetadata(metadata),
+  };
   try {
     const target = CONFIG.FUNNEL_LEDGER_PATH;
     ensureParentDir(target);
@@ -130,8 +139,9 @@ function saveKeyStore(store) {
 // Core Exports
 // ---------------------------------------------------------------------------
 
-async function createCheckoutSession({ successUrl, cancelUrl, customerEmail, installId, metadata = {} } = {}) {
-  const checkoutMetadata = { ...metadata, installId: installId || 'unknown' };
+async function createCheckoutSession({ successUrl, cancelUrl, customerEmail, installId, traceId, metadata = {} } = {}) {
+  const resolvedTraceId = traceId || metadata.traceId || createTraceId('checkout');
+  const checkoutMetadata = { ...metadata, installId: installId || 'unknown', traceId: resolvedTraceId };
 
   if (LOCAL_MODE()) {
     const localSessionId = `test_session_${crypto.randomBytes(8).toString('hex')}`;
@@ -139,8 +149,15 @@ async function createCheckoutSession({ successUrl, cancelUrl, customerEmail, ins
     store.sessions[localSessionId] = { id: localSessionId, customer: `local_cus_${crypto.randomBytes(4).toString('hex')}`, metadata: checkoutMetadata, payment_status: 'paid', status: 'complete' };
     saveLocalCheckoutSessions(store);
 
-    appendFunnelEvent({ stage: 'acquisition', event: 'checkout_session_created', installId, evidence: 'local_mode_manual', metadata: checkoutMetadata });
-    return { sessionId: localSessionId, url: null, localMode: true, metadata: checkoutMetadata };
+    appendFunnelEvent({
+      stage: 'acquisition',
+      event: 'checkout_session_created',
+      installId,
+      traceId: resolvedTraceId,
+      evidence: 'local_mode_manual',
+      metadata: checkoutMetadata,
+    });
+    return { sessionId: localSessionId, url: null, localMode: true, traceId: resolvedTraceId, metadata: checkoutMetadata };
   }
 
   const stripe = getStripeClient();
@@ -154,8 +171,15 @@ async function createCheckoutSession({ successUrl, cancelUrl, customerEmail, ins
     metadata: checkoutMetadata,
   });
 
-  appendFunnelEvent({ stage: 'acquisition', event: 'checkout_session_created', installId, evidence: session.id, metadata: checkoutMetadata });
-  return { sessionId: session.id, url: session.url, localMode: false, metadata: checkoutMetadata };
+  appendFunnelEvent({
+    stage: 'acquisition',
+    event: 'checkout_session_created',
+    installId,
+    traceId: resolvedTraceId,
+    evidence: session.id,
+    metadata: checkoutMetadata,
+  });
+  return { sessionId: session.id, url: session.url, localMode: false, traceId: resolvedTraceId, metadata: checkoutMetadata };
 }
 
 async function getCheckoutSessionStatus(sessionId) {
@@ -164,13 +188,25 @@ async function getCheckoutSessionStatus(sessionId) {
     const session = store.sessions[sessionId];
     if (!session) return { found: false };
     const provisioned = provisionApiKey(session.customer, { installId: session.metadata?.installId, source: 'local_checkout_lookup' });
-    return { found: true, localMode: true, sessionId, paid: true, paymentStatus: 'paid', status: 'complete', customerId: session.customer, installId: session.metadata?.installId, apiKey: provisioned.key };
+    return {
+      found: true,
+      localMode: true,
+      sessionId,
+      paid: true,
+      paymentStatus: 'paid',
+      status: 'complete',
+      customerId: session.customer,
+      installId: session.metadata?.installId,
+      traceId: session.metadata?.traceId || null,
+      apiKey: provisioned.key,
+    };
   }
 
   try {
     const stripe = getStripeClient();
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     const isPaid = session.payment_status === 'paid' || session.payment_status === 'no_payment_required';
+    const traceId = session.metadata?.traceId || null;
 
     if (!isPaid) return { found: true, localMode: false, sessionId, paid: false, paymentStatus: session.payment_status, status: session.status };
 
@@ -186,6 +222,7 @@ async function getCheckoutSessionStatus(sessionId) {
       customerId: session.customer,
       customerEmail: session.customer_details?.email || '',
       installId,
+      traceId,
       apiKey: provisioned.key,
     };
   } catch {
@@ -228,7 +265,15 @@ function validateApiKey(key) {
   if (!key) return { valid: false };
   const store = loadKeyStore();
   const meta = store.keys[key];
-  return (meta && meta.active) ? { valid: true, metadata: meta } : { valid: false };
+  if (!meta || !meta.active) return { valid: false };
+  return {
+    valid: true,
+    customerId: meta.customerId,
+    usageCount: meta.usageCount || 0,
+    installId: meta.installId || null,
+    createdAt: meta.createdAt,
+    metadata: meta,
+  };
 }
 
 function recordUsage(key) {
@@ -287,8 +332,16 @@ async function handleWebhook(rawBody, signature) {
       const session = event.data.object;
       const customerId = session.customer;
       const installId = session.metadata?.installId;
+      const traceId = session.metadata?.traceId || null;
       const result = provisionApiKey(customerId, { installId, source: 'stripe_webhook_checkout_completed' });
-      appendFunnelEvent({ stage: 'paid', event: 'stripe_checkout_completed', installId, evidence: session.id, metadata: { customerId, subscriptionId: session.subscription } });
+      appendFunnelEvent({
+        stage: 'paid',
+        event: 'stripe_checkout_completed',
+        installId,
+        traceId,
+        evidence: session.id,
+        metadata: { customerId, subscriptionId: session.subscription, traceId },
+      });
       return { handled: true, action: 'provisioned_api_key', result };
     }
     case 'customer.subscription.deleted': {
