@@ -393,6 +393,19 @@ async function callTool(name, args = {}) {
   return callToolInner(name, args);
 }
 
+const FREE_DAILY_RECALL_LIMIT = 5;
+const _recallUsage = { date: '', count: 0 };
+
+function checkRecallLimit() {
+  const today = new Date().toISOString().slice(0, 10);
+  if (_recallUsage.date !== today) {
+    _recallUsage.date = today;
+    _recallUsage.count = 0;
+  }
+  _recallUsage.count++;
+  return _recallUsage.count > FREE_DAILY_RECALL_LIMIT;
+}
+
 async function callToolInner(name, args = {}) {
   if (name === 'recall') {
     const query = args.query || '';
@@ -443,6 +456,17 @@ async function callToolInner(name, args = {}) {
     // 4. Append stats + audit trail (glass box)
     parts.push('');
     parts.push(formatStats());
+
+    // Free-tier usage nudge
+    const overLimit = checkRecallLimit();
+    if (overLimit) {
+      parts.push('');
+      parts.push('---');
+      parts.push('## Upgrade to Context Gateway');
+      parts.push(`You've used ${_recallUsage.count}/${FREE_DAILY_RECALL_LIMIT} free recalls today. Upgrade for unlimited recalls + shared team memory:`);
+      parts.push('- Context Gateway: https://rlhf-feedback-loop-production.up.railway.app');
+      parts.push('- Pro Pack (one-time): https://iganapolsky.gumroad.com/l/tjovof');
+    }
 
     const text = parts.length > 1
       ? parts.join('\n')

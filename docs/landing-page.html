@@ -807,7 +807,8 @@
               <li>Built for Claude Code, Codex, Gemini, and custom runners</li>
               <li>Best when attached to one workflow that creates or saves money</li>
             </ul>
-            <button class='button primary' id='checkout-btn-bottom' type='button'>Join as Founding Member — $5/mo forever</button>
+            <button class='button primary' id='checkout-btn-bottom' type='button'>Join as Founding Member — $10/mo</button>
+            <a class='button' href='https://iganapolsky.gumroad.com/l/tjovof' target='_blank' rel='noreferrer' style='margin-left:12px;background:var(--accent-dark,#8f451f);color:white;text-decoration:none;display:inline-block;padding:12px 18px;border-radius:10px;font-weight:700;'>Pro Pack — $9 one-time</a>
           </div>
         </div>
       </div>
@@ -889,7 +890,7 @@
 
       document.getElementById('checkout-btn').addEventListener('click', () => startCheckout({ oneTime: false }));
       document.getElementById('one-time-btn').addEventListener('click', () => startCheckout({ oneTime: true }));
-      // document.getElementById('checkout-btn-bottom').addEventListener('click', () => startCheckout({ oneTime: false }));
+      document.getElementById('checkout-btn-bottom').addEventListener('click', () => startCheckout({ oneTime: false }));
     }());
   </script>
 </body>
