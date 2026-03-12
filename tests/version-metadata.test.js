@@ -63,6 +63,7 @@ test('hosted origin and repository metadata stay canonical across live-facing ar
   assert.match(publicLanding, new RegExp(`Versioned proof: v${packageJson.version.replaceAll('.', '\\.')}`));
   assert.match(publicLanding, new RegExp(`Context Gateway • v${packageJson.version.replaceAll('.', '\\.')}`));
   assert.doesNotMatch(publicLanding, /mcp-gateway\.vercel\.app/);
+  assert.doesNotMatch(publicLanding, /buy\.stripe\.com/);
   assert.doesNotMatch(publicLanding, /\$5\/mo/);
   assert.doesNotMatch(publicLanding, /50 spots|38 spots|Join 12 founding members/i);
   assert.doesNotMatch(publicLanding, /github\.com\/IgorGanapolsky\/rlhf-feedback-loop/);
@@ -81,6 +82,7 @@ test('runtime hosted billing config defaults to the live founding price', () => 
   try {
     const runtimeConfig = resolveHostedBillingConfig();
     assert.equal(runtimeConfig.foundingPrice, '$10/mo');
+    assert.equal(runtimeConfig.checkoutFallbackUrl, CANONICAL_APP_ORIGIN);
   } finally {
     if (previous === undefined) {
       delete process.env.RLHF_FOUNDING_PRICE;

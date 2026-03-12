@@ -3,7 +3,7 @@
 const crypto = require('node:crypto');
 
 const DEFAULT_PUBLIC_APP_ORIGIN = 'https://rlhf-feedback-loop-production.up.railway.app';
-const DEFAULT_CHECKOUT_FALLBACK_URL = 'https://buy.stripe.com/fZu4gz0I47Dg9G1cGv3sI03';
+const DEFAULT_CHECKOUT_FALLBACK_URL = DEFAULT_PUBLIC_APP_ORIGIN;
 const DEFAULT_FOUNDING_PRICE = '$10/mo';
 
 function normalizeOrigin(value) {

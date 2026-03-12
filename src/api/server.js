@@ -43,6 +43,7 @@ const {
   recordUsage,
   rotateApiKey,
   handleWebhook,
+  verifyWebhookSignature,
   verifyGithubWebhookSignature,
   handleGithubWebhook,
   getFunnelAnalytics,
@@ -752,6 +753,10 @@ function createApiServer() {
         }
 
         const result = await handleWebhook(rawBody, sig);
+        if (result && result.reason === 'invalid_signature') {
+          sendJson(res, 400, { error: result.error || 'Invalid webhook signature' });
+          return;
+        }
         sendJson(res, 200, result);
 
       } catch (err) {
