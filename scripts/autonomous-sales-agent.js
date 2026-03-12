@@ -14,6 +14,7 @@ const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const { GoogleGenAI } = require('@google/genai');
+const { appendFunnelEvent } = require('./billing');
 
 const CHECKOUT_LINK = 'https://buy.stripe.com/fZu4gz0I47Dg9G1cGv3sI03';
 
@@ -30,8 +31,6 @@ function runGH(args) {
 // Phase 1: Autonomous Prospecting
 function prospectTargets() {
   console.log('🤖 [Prospecting Agent] Scanning for recent MCP activity...');
-  
-  // Search for repositories updated recently mentioning MCP
   const searchResult = runGH(['search/repositories?q=MCP+Model+Context+Protocol&sort=updated']);
   
   if (!searchResult || !searchResult.items || searchResult.items.length === 0) {
@@ -39,7 +38,6 @@ function prospectTargets() {
     return [];
   }
 
-  // Filter and format top 3 targets
   const targets = searchResult.items.slice(0, 3).map(repo => ({
     username: repo.owner.login,
     repoName: repo.name,
@@ -84,12 +82,27 @@ Reference their specific repo. Do not sound like a marketer. Sound like a senior
         model: 'gemini-2.5-flash',
         contents: prompt
       });
+      const message = response.text.trim();
       messages.push({
         target: target.username,
         repo: target.repoName,
-        message: response.text.trim()
+        message
       });
       console.log(`🤖 [Content Agent] Drafted message for @${target.username}`);
+
+      // TELEMETRY (CURE FOR BLINDNESS)
+      await appendFunnelEvent({
+        stage: 'acquisition',
+        event: 'autonomous_personalized_outreach_generated',
+        metadata: {
+          source: 'autonomous_sales_agent',
+          targetUser: target.username,
+          targetRepo: target.repoName,
+          targetUrl: target.url,
+          bespokeMessage: message
+        }
+      });
+
     } catch (err) {
       console.error(`Error generating message for ${target.username}:`, err.message);
     }
@@ -122,4 +135,4 @@ async function executeGTM() {
   console.log(`\n✅ GTM Automation Complete. Open docs/AUTONOMOUS_GITOPS.md to review and dispatch the personalized campaigns.`);
 }
 
-executeGTM();
+executeGTM().catch(console.error);

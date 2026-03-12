@@ -10,6 +10,7 @@
 const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { appendFunnelEvent } = require('./billing');
 
 const CHECKOUT_LINK = 'https://buy.stripe.com/fZu4gz0I47Dg9G1cGv3sI03';
 
@@ -24,7 +25,6 @@ function runGH(args) {
 
 function findMCPDevelopers() {
   console.log('🔍 Scanning GitHub for recent MCP developers...');
-  // Search for recent repos with MCP in the name or description
   const searchResult = runGH(['search/repositories?q=MCP+Model+Context+Protocol&sort=updated']);
   
   if (!searchResult || !searchResult.items) {
@@ -41,21 +41,37 @@ function findMCPDevelopers() {
   return targets;
 }
 
-function generateOutreachScript(targets) {
+async function generateOutreachScript(targets) {
   if (targets.length === 0) return;
 
-  let report = '# 🚀 First Dollar Outreach Targets\n\nSend these DMs immediately to capture early adopters:\n\n';
+  let report = '# 🚀 First Dollar Outreach Targets\n\n';
 
-  targets.forEach(t => {
+  for (const t of targets) {
     report += `### Target: @${t.username} (Author of ${t.repoName})\n`;
     report += `**DM Script:**\n`;
     report += `> "Hey @${t.username}, saw you're building with MCP on \`${t.repoName}\`. I just launched a Context Gateway that gives MCP agents 'Always-On' memory and stops them from repeating failures across sessions. Thought it might be highly relevant to your stack. I'm taking founding users today: ${CHECKOUT_LINK}"\n\n`;
-  });
+    
+    // TELEMETRY (CURE FOR BLINDNESS)
+    await appendFunnelEvent({
+      stage: 'acquisition',
+      event: 'outreach_target_generated',
+      metadata: {
+        source: 'github_outreach',
+        targetUser: t.username,
+        targetRepo: t.repoName,
+        targetUrl: t.repoUrl
+      }
+    });
+  }
 
   const reportPath = path.join(__dirname, '../docs/OUTREACH_TARGETS.md');
   fs.writeFileSync(reportPath, report);
   console.log(`✅ Generated 5 targeted leads. Open docs/OUTREACH_TARGETS.md and send the DMs.`);
 }
 
-const targets = findMCPDevelopers();
-generateOutreachScript(targets);
+async function main() {
+  const targets = findMCPDevelopers();
+  await generateOutreachScript(targets);
+}
+
+main().catch(console.error);
