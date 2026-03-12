@@ -14,7 +14,8 @@
       "evaluate_context_pack",
       "context_provenance",
       "commerce_recall",
-      "generate_skill"
+      "generate_skill",
+      "satisfy_gate"
     ],
     "essential": [
       "capture_feedback",

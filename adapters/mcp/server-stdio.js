@@ -41,6 +41,9 @@ const {
 const {
   generateSkills,
 } = require('../../scripts/skill-generator');
+const {
+  satisfyGate,
+} = require('../../scripts/gate-satisfy');
 
 const SERVER_INFO = {
   name: 'rlhf-feedback-loop-mcp',
@@ -242,6 +245,18 @@ const TOOLS = [
       properties: {
         query: { type: 'string', description: 'Describe the current task or context to find relevant past feedback' },
         limit: { type: 'number', description: 'Max memories to return (default 5)' },
+      },
+    },
+  },
+  {
+    name: 'satisfy_gate',
+    description: 'Satisfy a gate condition (e.g., after checking PR threads). Evidence is stored with a 5-minute TTL.',
+    inputSchema: {
+      type: 'object',
+      required: ['gate'],
+      properties: {
+        gate: { type: 'string', description: 'Gate condition ID to satisfy (e.g., pr_threads_checked)' },
+        evidence: { type: 'string', description: 'Evidence text (e.g., "0 unresolved threads")' },
       },
     },
   },
@@ -653,6 +668,11 @@ async function callToolInner(name, args = {}) {
   if (name === 'context_provenance') {
     const limit = Number(args.limit || 50);
     const result = getProvenance(Number.isFinite(limit) ? limit : 50);
+    return { content: [{ type: 'text', text: toText(result) }] };
+  }
+
+  if (name === 'satisfy_gate') {
+    const result = satisfyGate(args.gate, args.evidence);
     return { content: [{ type: 'text', text: toText(result) }] };
   }
 
