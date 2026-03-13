@@ -66,7 +66,7 @@ const {
   generateDashboard,
 } = require('../../scripts/dashboard');
 
-const LANDING_PAGE_PATH = path.resolve(__dirname, '../../docs/landing-page.html');
+const LANDING_PAGE_PATH = path.resolve(__dirname, '../../public/index.html');
 
 function getSafeDataDir() {
   const { FEEDBACK_LOG_PATH } = getFeedbackPaths();
