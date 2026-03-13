@@ -16,11 +16,11 @@ const {
   discoverFeedbackDir
 } = require('./skill-generator');
 
-const feedbackDir = discoverFeedbackDir();
-const logPath = path.join(feedbackDir, 'memory-log.jsonl');
-const proposalsDir = path.join(feedbackDir, 'skill-proposals');
+function proposeSkills(options = {}) {
+  const feedbackDir = options.feedbackDir || discoverFeedbackDir();
+  const logPath = path.join(feedbackDir, 'memory-log.jsonl');
+  const proposalsDir = path.join(feedbackDir, 'skill-proposals');
 
-function proposeSkills() {
   const memories = parseFeedbackFile(logPath);
   const mistakes = memories.filter(m => m.category === 'error' || m.title.startsWith('MISTAKE:'));
   

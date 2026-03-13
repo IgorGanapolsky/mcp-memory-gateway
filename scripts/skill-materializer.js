@@ -12,11 +12,11 @@ const fs = require('fs');
 const path = require('path');
 const { discoverFeedbackDir } = require('./skill-generator');
 
-const feedbackDir = discoverFeedbackDir();
-const proposalsDir = path.join(feedbackDir, 'skill-proposals');
-const skillsOutDir = path.join(process.cwd(), 'skills');
+function materializeSkills(options = {}) {
+  const feedbackDir = options.feedbackDir || discoverFeedbackDir();
+  const proposalsDir = path.join(feedbackDir, 'skill-proposals');
+  const skillsOutDir = options.skillsOutDir || process.env.RLHF_SKILLS_DIR || path.join(process.cwd(), 'skills');
 
-function materializeSkills() {
   if (!fs.existsSync(proposalsDir)) {
     console.log('No proposals directory found.');
     return;
