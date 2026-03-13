@@ -58,7 +58,7 @@ Observed result:
 
 - `npm test` passed end-to-end after the audit changes.
 - `npm run test:coverage` passed with `963` passed, `0` failed, `1` skipped.
-- Current coverage summary: `82.69%` lines, `68.89%` branches, `85.23%` functions.
+- Current coverage summary on the rebased audit head: `82.58%` lines, `68.88%` branches, `85.24%` functions.
 - `npm run test:gates`, `node --test tests/contextfs.test.js`, `node --test tests/recall-limit.test.js`, and `node --test tests/mcp-server.test.js tests/api-server.test.js` all passed.
 - `npm run test:workers` passed after the worker package gained a dedicated type-check test script.
 - `env RLHF_PROOF_DIR="$(mktemp -d)" npm run prove:adapters`: `38` passed, `0` failed.
