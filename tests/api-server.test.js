@@ -51,8 +51,8 @@ test('root serves the landing page by default', async () => {
   assert.match(String(res.headers.get('content-type')), /text\/html/);
 
   const body = await res.text();
-  assert.match(body, /MCP Memory Gateway/i);
-  assert.match(body, /Pre-Action Gates/i);
+  assert.match(body, /mcp.memory.gateway/i);
+  assert.match(body, /Pre.Action Gates/i);
   assert.match(body, /\$10\/mo/);
 });
 
