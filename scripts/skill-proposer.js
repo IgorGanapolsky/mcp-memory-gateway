@@ -26,7 +26,7 @@ function proposeSkills(options = {}) {
   
   if (mistakes.length === 0) {
     console.log('No mistakes found in memory log.');
-    return;
+    return [];
   }
 
   // Cluster by tags (EvoSkill refinement)
@@ -89,6 +89,8 @@ function proposeSkills(options = {}) {
 if (require.main === module) {
   const props = proposeSkills();
   if (props && props.length > 0) {
+    const feedbackDir = discoverFeedbackDir();
+    const proposalsDir = path.join(feedbackDir, 'skill-proposals');
     console.log(`\nGenerated ${props.length} skill proposals in ${proposalsDir}`);
     props.forEach(p => console.log(` - ${p.suggestedSkill.name}: ${p.problem}`));
   }

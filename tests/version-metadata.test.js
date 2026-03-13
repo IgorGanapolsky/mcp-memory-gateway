@@ -80,7 +80,7 @@ test('runtime hosted billing config defaults to the live founding price', () => 
 
   try {
     const runtimeConfig = resolveHostedBillingConfig();
-    assert.equal(runtimeConfig.foundingPrice, '$9 one-time');
+    assert.equal(runtimeConfig.foundingPrice, '$29/mo');
     assert.equal(runtimeConfig.checkoutFallbackUrl, CANONICAL_APP_ORIGIN);
   } finally {
     if (previous === undefined) {

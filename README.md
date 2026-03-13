@@ -311,7 +311,7 @@ Curated configuration pack for teams that want a faster production setup without
 | **Hook Templates** | Ready-to-install Stop, UserPromptSubmit, PostToolUse hooks |
 | **Reminder Templates** | 8 production reminder templates with priority levels |
 
-**[$9 on Gumroad →](https://iganapolsky.gumroad.com/l/tjovof)**
+**[$29/mo on Gumroad →](https://iganapolsky.gumroad.com/l/tjovof)**
 
 Current pricing and traction policy: [Commercial Truth](docs/COMMERCIAL_TRUTH.md)
 
